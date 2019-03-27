@@ -1,4 +1,3 @@
-
 /**
  * 
  * @param {State variable containing game information} state 
@@ -40,7 +39,7 @@ function collidableDistanceCheck(state, distanceThreshold) {
  */
 function createCube(position, castShadow, receiveShadow, visible, geometryVals, color) {
     var geometry = new THREE.BoxGeometry(geometryVals[0], geometryVals[1], geometryVals[2]);
-    var material = new THREE.MeshBasicMaterial({ color: color });
+    var material = new THREE.MeshPhongMaterial({ color: color });
     var cube = new THREE.Mesh(geometry, material);
     cube.position.x = position[0];
     cube.position.y = position[1];
@@ -57,7 +56,7 @@ function createCube(position, castShadow, receiveShadow, visible, geometryVals, 
  * 
  * @param {State variable holding all game info} state 
  * @param {Which direction we intend to move the ship} direction 
- * @Purpose ####### WIP ####### rotates the ship
+ * @purpose ####### WIP ####### rotates the ship
  */
 function rotateShip(state, direction) {
     var ship = state.objects[state.selectedIndex];
@@ -90,7 +89,7 @@ function updateShipPosition(state) {
     var camera = state.camera;
     var mouseX = state.mouseX;
     var mouseY = state.mouseY;
-    let speed = 0.0002;
+    let speed = 0.0008;
 
     //move left
     if (state.mouseX > 0) {
@@ -196,14 +195,14 @@ function setupMouseMove(state) {
  * @param {string url of the obj file} objURL 
  * @param {string url of the mtl file} mtlURL 
  * @param {array of coordinates for position(x,y,z)} initialPosition 
- * @Purpose Loads an obj file and applies it's material to it
+ * @purpose Loads an obj file and applies it's material to it
  */
 function loadModel(state, objURL, mtlURL, initialPosition, isPlayer) {
     var mtlLoader = new THREE.MTLLoader();
     mtlLoader.setPath('../models/');
     var url = mtlURL;
     mtlLoader.load(url, function (materials) {
-
+        console.log(materials);
         materials.preload();
 
         var objLoader = new THREE.OBJLoader();
@@ -217,11 +216,11 @@ function loadModel(state, objURL, mtlURL, initialPosition, isPlayer) {
                 child.receiveShadow = true;
             });
 
-            if (isPlayer){
+            if (isPlayer) {
                 state.ship = object;
                 state.scene.add(object);
             }
-            else{
+            else {
                 state.objects.push(object);
                 state.scene.add(object);
             }
@@ -231,10 +230,38 @@ function loadModel(state, objURL, mtlURL, initialPosition, isPlayer) {
     });
 }
 
+function loadModelNoMaterial(state, objURL, initialPosition, isPlayer) {
+    let material = new THREE.MeshStandardMaterial({
+        roughness: 0.8,
+        color: new THREE.Color(0xff0000),
+    });
+    var objLoader = new THREE.OBJLoader();
+    objLoader.setMaterials(material);
+    objLoader.setPath('../models/');
+    objLoader.load(objURL, function (object) {
+        object.position.set(initialPosition[0], initialPosition[1], initialPosition[2])
+
+        object.traverse(function (child) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+        });
+
+        if (isPlayer) {
+            state.ship = object;
+            state.scene.add(object);
+        }
+        else {
+            state.objects.push(object);
+            state.scene.add(object);
+        }
+
+    });
+}
+
 /**
  * 
  * @param {State variable holding all game info} state
- * @Purpose Keyboard controls, not currently being used 
+ * @purpose Keyboard controls, not currently being used 
  */
 function setupKeypresses(state) {
     document.addEventListener("keydown", (event) => {
@@ -269,7 +296,6 @@ function setupKeypresses(state) {
                     break;
                 case "KeyS":
                     console.log("up");
-
                     break;
 
                 case "KeyE":
@@ -290,12 +316,9 @@ function setupKeypresses(state) {
 
                 case "Space":
                     state.plane.rotation.x += 0.2;
-
                     break;
 
                 default:
-
-
                     break;
             }
         }
@@ -304,6 +327,35 @@ function setupKeypresses(state) {
     });
 
 
+}
+
+function createTube(state, lengthVal, color, pointsArray, tubularSeg, radius, radialSeg, closed) {
+
+    //example for loop for declaring points along z axis
+    /*
+    for (let i = 0; i < lengthVal; i += 1) {
+        state.tube.tubePoints.push(new THREE.Vector3(0, 15, 2.5 * (i / 4)));
+    }*/
+
+    let pathBase = new THREE.CatmullRomCurve3(pointsArray);
+    state.tube.curve = pathBase;
+
+    let tubeGeo = new THREE.TubeBufferGeometry(pathBase, tubularSeg, radius, radialSeg, closed);
+    tubeGeo.needsUpdate = true;
+    state.tube.tubeGeo = tubeGeo;
+
+    let tubeMat = new THREE.MeshPhongMaterial({
+        side: THREE.BackSide,
+        color: color
+    });
+
+    state.tube.mat = tubeMat;
+
+    let mesh = new THREE.Mesh(tubeGeo, tubeMat);
+    //mesh.position.z = 30;   
+    state.tube.object = mesh;
+    state.objects.push(mesh);
+    state.scene.add(mesh);
 }
 
 
@@ -330,4 +382,39 @@ function setupPlane(state) {
     state.plane = plane;
 
     state.scene.add(plane);
+}
+
+function checkCollision(state, collisionType) {
+    if (collisionType === "wall") {
+        state.moving = false;
+    }
+    else if (collisionType === "tube") {
+        console.log("TUBE");
+    }
+}
+
+
+function CustomSinCurve(scale) {
+
+    THREE.Curve.call(this);
+
+    this.scale = (scale === undefined) ? 1 : scale;
+
+}
+
+function loadJSON(path, success, error) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                if (success)
+                    success(JSON.parse(xhr.responseText));
+            } else {
+                if (error)
+                    error(xhr);
+            }
+        }
+    };
+    xhr.open("GET", path, true);
+    xhr.send();
 }

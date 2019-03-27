@@ -10,9 +10,11 @@ function main() {
         selectedIndex: 0,
         camera: null,
         scene: null,
-        flySpeed: 0.1,
+        flySpeed: 0.3,
         mouseX: 0,
-        mouseY: 0
+        mouseY: 0,
+        moving: true
+
     }
 
     //create scene and camera
@@ -22,7 +24,6 @@ function main() {
     camera.position.y = 1;
     state.scene = scene;
     state.camera = camera;
-
 
     //create white pointlight
     var light = new THREE.PointLight(0xffffff, 1, 100);
@@ -60,12 +61,15 @@ function main() {
 
         //Check if the ship has been loaded or not
         if (state.ship) {
+
             //move the ship, plane, camera and light forward 
-            state.ship.position.z += state.flySpeed;
-            state.camera.position.z += state.flySpeed;
-            state.plane.position.z += state.flySpeed;
-            state.lights[0].position.z += state.flySpeed;
-            state.collisionBox.position.z += state.flySpeed;
+            if (state.moving) {
+                state.ship.position.z += state.flySpeed;
+                state.camera.position.z += state.flySpeed;
+                state.plane.position.z += state.flySpeed;
+                state.lights[0].position.z += state.flySpeed;
+                state.collisionBox.position.z += state.flySpeed;
+            }
 
             //this logic was being used to bring the ship back to a neutral rotation
             if (state.ship.rotation.z > 0) {
@@ -83,7 +87,7 @@ function main() {
             }
 
             if (state.collidableObjects.length > 0) {
-                console.log("detecting....");
+                //console.log("detecting....");
                 for (var vertexIndex = 0; vertexIndex < state.collisionBox.geometry.vertices.length; vertexIndex++) {
                     var localVertex = state.collisionBox.geometry.vertices[vertexIndex].clone();
                     var globalVertex = state.collisionBox.matrix.multiplyVector3(localVertex);
@@ -93,28 +97,33 @@ function main() {
                     var collisionResults = ray.intersectObjects(state.collidableObjects);
                     if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
                         // a collision occurred... do something...
-                        console.log("Collision!");
+
+
+                        for (let i = 0; i < state.collidableObjects.length; i++) {
+                            checkCollision(state, state.collidableObjects[i].type);
+                        }
+
+
+                    }
+                    else if (collisionResults.length) {
+                        state.moving = true;
                     }
                 }
             }
 
             //update the ship location
             updateShipPosition(state);
-
             collidableDistanceCheck(state, 30);
 
         }
 
+
         requestAnimationFrame(animate);
         renderer.render(scene, camera);
 
-
     }
     animate();
-
-
 }
-
 
 /**
  * 
@@ -125,9 +134,17 @@ function initObjects(state) {
 
     //load tiefighter model
     loadModel(state, '../models/tiefighter.obj', '../models/tiefighter.mtl', [0, 0, 10], true);
+    //loadModel(state, '../models/millenium-falcon.obj', '../models/millenium-falcon.mtl', [0, 0, 10], true);
+
+
+    loadJSON('../gameData/level.json',
+        function (data) { console.log(data); },
+        function (xhr) { console.error(xhr); }
+    );
 
     //creating simple green box here
     let cube = createCube([5, 15, 100], true, true, true, [10, 10, 10], 0x00FF00);
+    cube.type = "wall"
     state.objects.push(cube);
     state.scene.add(cube);
 
@@ -136,6 +153,5 @@ function initObjects(state) {
     state.scene.add(state.collisionBox);
 
 }
-
 
 main();
