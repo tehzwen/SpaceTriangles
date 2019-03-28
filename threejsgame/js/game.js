@@ -13,7 +13,8 @@ function main() {
         flySpeed: 0.3,
         mouseX: 0,
         mouseY: 0,
-        moving: true
+        moving: true,
+        finishedLoad: false
 
     }
 
@@ -26,15 +27,9 @@ function main() {
     state.camera = camera;
 
     //create white pointlight
-    var light = new THREE.PointLight(0xffffff, 1, 100);
-    light.shadow.mapSize.width = 512;  // default
-    light.shadow.mapSize.height = 512; // default
-    light.shadow.camera.near = 0.5;       // default
-    light.shadow.camera.far = 500      // default
-    light.castShadow = true;
-    light.position.set(0, 50, 5);
-    scene.add(light);
-    state.lights.push(light);
+    createLight(state, scene, false, 0, 100, 5);
+    createLight(state, scene, true, 0, 50, 5);
+    createLight(state, scene, false, -70, 100, 5);
 
     //create renderer
     var renderer = new THREE.WebGLRenderer();
@@ -60,14 +55,18 @@ function main() {
     function animate() {
 
         //Check if the ship has been loaded or not
-        if (state.ship) {
+        if (state.ship && state.finishedLoad) {
 
             //move the ship, plane, camera and light forward 
             if (state.moving) {
                 state.ship.position.z += state.flySpeed;
                 state.camera.position.z += state.flySpeed;
                 state.plane.position.z += state.flySpeed;
-                state.lights[0].position.z += state.flySpeed;
+
+                for (let i = 0; i < state.lights.length; i++){
+                    state.lights[i].position.z += state.flySpeed;
+                }
+                
                 state.collisionBox.position.z += state.flySpeed;
             }
 
@@ -125,6 +124,18 @@ function main() {
     animate();
 }
 
+function createLight(state, scene, shadow, positionX, positionY, positionZ){
+    var light = new THREE.PointLight(0xffffff, 1, 100);
+    light.shadow.mapSize.width = 512;  // default
+    light.shadow.mapSize.height = 512; // default
+    light.shadow.camera.near = 0.5;       // default
+    light.shadow.camera.far = 500      // default
+    light.castShadow = shadow;
+    light.position.set(positionX, positionY, positionZ);
+    scene.add(light);
+    state.lights.push(light);
+}
+
 /**
  * 
  * @param {State variable holding game information} state 
@@ -136,9 +147,14 @@ function initObjects(state) {
     loadModel(state, '../models/tiefighter.obj', '../models/tiefighter.mtl', [0, 0, 10], true);
 
     loadJSON('../gameData/level.json',
-        function (data) { console.log(data); },
+        function (data) { 
+            //console.log(data);
+            createObjs(data, state); 
+        },
         function (xhr) { console.error(xhr); }
     );
+
+
 
     //creating simple green box here
     //let cube = createCube([5, 15, 100], true, true, true, [10, 10, 10], 0x00FF00);
@@ -151,6 +167,29 @@ function initObjects(state) {
     state.collisionBox = createCube([0, 0, 10], false, false, false, [5, 5, 5], 0x000000);
     state.scene.add(state.collisionBox);
 
+}
+
+function createObjs(data, state){
+    for (let i = 0; i < data.length; i++){
+        if (data[i].type === "cube"){
+            
+            // If the cube has a diffuse and no texture
+            if (data[i].material.diffuse != null){
+                let cube = createCube(data[i].position, true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.diffuse);
+                cube.type = "wall";
+                state.objects.push(cube);
+                state.scene.add(cube);
+            }
+            // If the cube has a texture and no diffuse
+            else{
+                let cube = createCubeWithTexture(data[i].position, true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.texture);
+                cube.type = "wall";
+                state.objects.push(cube);
+                state.scene.add(cube);
+            }
+        }
+    }
+    state.finishedLoad = true;
 }
 
 main();

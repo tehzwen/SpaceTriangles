@@ -435,10 +435,10 @@ function createTube(state, lengthVal, color, pointsArray, tubularSeg, radius, ra
  */
 function setupPlane(state) {
     let side = 120;
-    geometry = new THREE.PlaneGeometry(side, side, side * 2, side * 2);
+    geometry = new THREE.PlaneGeometry(side, side, side * 5, side * 5);
     let material = new THREE.MeshStandardMaterial({
         roughness: 0.8,
-        color: new THREE.Color(0xff0000),
+        color: new THREE.Color(0x000000),
     });
     plane = new THREE.Mesh(geometry, material);
     plane.castShadow = false;
