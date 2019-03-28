@@ -134,8 +134,6 @@ function initObjects(state) {
 
     //load tiefighter model
     loadModel(state, '../models/tiefighter.obj', '../models/tiefighter.mtl', [0, 0, 10], true);
-    //loadModel(state, '../models/millenium-falcon.obj', '../models/millenium-falcon.mtl', [0, 0, 10], true);
-
 
     loadJSON('../gameData/level.json',
         function (data) { console.log(data); },
@@ -143,7 +141,8 @@ function initObjects(state) {
     );
 
     //creating simple green box here
-    let cube = createCube([5, 15, 100], true, true, true, [10, 10, 10], 0x00FF00);
+    //let cube = createCube([5, 15, 100], true, true, true, [10, 10, 10], 0x00FF00);
+    let cube = createCubeWithTexture([5, 15, 100], true, true, true, [10, 10, 10], '../images/poggers.png', "repeat", "repeat", (4,4));
     cube.type = "wall"
     state.objects.push(cube);
     state.scene.add(cube);

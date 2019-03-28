@@ -51,6 +51,64 @@ function createCube(position, castShadow, receiveShadow, visible, geometryVals, 
     return cube;
 }
 
+function createCubeWithTexture(position, castShadow, receiveShadow, visible, geometryVals, textureURL, wrapS, wrapT, repeatTuple) {
+    let texture = new THREE.TextureLoader().load(textureURL);
+
+    /*switch (wrapS) {
+        case "repeat":
+            texture.wrapS = THREE.RepeatWrapping;
+            break;
+
+        case "clamp-to-edge":
+            texture.wrapS = THREE.ClampToEdgeWrapping;
+            break;
+
+        case "mirror":
+            texture.wrapS = THREE.MirroredRepeatWrapping;
+            break;
+
+        default:
+
+            break;
+    }
+
+    switch (wrapT) {
+        case "repeat":
+            texture.wrapT = THREE.RepeatWrapping;
+            break;
+
+        case "clamp-to-edge":
+            texture.wrapT = THREE.ClampToEdgeWrapping;
+            break;
+
+        case "mirror":
+            texture.wrapT = THREE.MirroredRepeatWrapping;
+            break;
+
+        default:
+
+            break;
+    }*/
+
+    let geometry = new THREE.BoxGeometry(geometryVals[0], geometryVals[1], geometryVals[2]);
+    //texture.repeat.set(repeatTuple[0], repeatTuple[1]);
+    let material = new THREE.MeshBasicMaterial({
+        map: texture
+    });
+
+    let cube = new THREE.Mesh(geometry, material);
+    cube.position.x = position[0];
+    cube.position.y = position[1];
+    cube.position.z = position[2];
+    cube.castShadow = castShadow;
+    cube.receiveShadow = receiveShadow;
+    cube.visible = visible;
+
+    return cube;
+
+
+}
+
 
 /**
  * 
@@ -329,6 +387,17 @@ function setupKeypresses(state) {
 
 }
 
+/**
+ * 
+ * @param {holds game info} state 
+ * @param {length of tube} lengthVal 
+ * @param {color for the tube} color 
+ * @param {array containing the points} pointsArray 
+ * @param {tubular segment value} tubularSeg 
+ * @param {radius for tube} radius 
+ * @param {number of segments in radial direction} radialSeg 
+ * @param {boolean to determine if tube is closed} closed 
+ */
 function createTube(state, lengthVal, color, pointsArray, tubularSeg, radius, radialSeg, closed) {
 
     //example for loop for declaring points along z axis
@@ -394,14 +463,12 @@ function checkCollision(state, collisionType) {
 }
 
 
-function CustomSinCurve(scale) {
-
-    THREE.Curve.call(this);
-
-    this.scale = (scale === undefined) ? 1 : scale;
-
-}
-
+/**
+ * 
+ * @param {path of json file to be loaded} path 
+ * @param {call back function upon success} success 
+ * @param {call back function upon failure} error 
+ */
 function loadJSON(path, success, error) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
