@@ -2,43 +2,48 @@
     {
         "type": "cube",
         "ID": "leftHorizontalWall",
-        "position": [50, 12, 300],
-        "geometry": {"width": 100,"height": 50, "depth": 100},
+        "position": [150, 12, 300],
+        "geometry": {"width": 200,"height": 50, "depth": 100},
         "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
     },
     {
         "type": "cube",
         "ID": "rightHorizontalWall",
-        "position": [-70, 12, 300],
-        "geometry": {"width": 100,"height": 50, "depth": 100},
+        "position": [-150, 12, 300],
+        "geometry": {"width": 200,"height": 50, "depth": 100},
         "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
     },
     {
         "type": "cube",
-        "position": [-20, 12, 300],
+        "collidable": false,
+        "position": [-50, 12, 300],
         "geometry": {"width": 15,"height": 50, "depth": 100},
         "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
     },
     {
         "type": "cube",
-        "position": [10, 12, 300],
+        "collidable": false,
+        "position": [50, 12, 300],
         "geometry": {"width": 15,"height": 50, "depth": 100},
         "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
     },
     {
         "type": "cube",
-        "position": [-20, 12, 400],
+        "collidable": false,
+        "position": [-50, 12, 400],
         "geometry": {"width": 15,"height": 50, "depth": 100},
         "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
     },
     {
         "type": "cube",
-        "position": [10, 12, 400],
+        "collidable": false,
+        "position": [50, 12, 400],
         "geometry": {"width": 15,"height": 50, "depth": 100},
         "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
     },
     {
         "type": "cube",
+        "collidable": true,
         "position": [-50, 20, 130],
         "geometry": {"width": 20,"height": 20, "depth": 15},
         "material": {"diffuse": null, "texture": "../images/Lipton.jpg"}

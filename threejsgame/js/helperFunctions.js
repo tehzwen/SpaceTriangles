@@ -1,3 +1,5 @@
+var MAX_POINTS = 500;
+
 /**
  * 
  * @param {State variable containing game information} state 
@@ -53,43 +55,6 @@ function createCube(position, castShadow, receiveShadow, visible, geometryVals, 
 
 function createCubeWithTexture(position, castShadow, receiveShadow, visible, geometryVals, textureURL, wrapS, wrapT, repeatTuple) {
     let texture = new THREE.TextureLoader().load(textureURL);
-
-    /*switch (wrapS) {
-        case "repeat":
-            texture.wrapS = THREE.RepeatWrapping;
-            break;
-
-        case "clamp-to-edge":
-            texture.wrapS = THREE.ClampToEdgeWrapping;
-            break;
-
-        case "mirror":
-            texture.wrapS = THREE.MirroredRepeatWrapping;
-            break;
-
-        default:
-
-            break;
-    }
-
-    switch (wrapT) {
-        case "repeat":
-            texture.wrapT = THREE.RepeatWrapping;
-            break;
-
-        case "clamp-to-edge":
-            texture.wrapT = THREE.ClampToEdgeWrapping;
-            break;
-
-        case "mirror":
-            texture.wrapT = THREE.MirroredRepeatWrapping;
-            break;
-
-        default:
-
-            break;
-    }*/
-
     let geometry = new THREE.BoxGeometry(geometryVals[0], geometryVals[1], geometryVals[2]);
     //texture.repeat.set(repeatTuple[0], repeatTuple[1]);
     let material = new THREE.MeshBasicMaterial({
@@ -150,7 +115,7 @@ function updateShipPosition(state) {
     let speed = 0.0008;
 
     //move left
-    if (state.mouseX > 0) {
+    if (state.mouseX > 0 && ship.position.x < state.canal.x0) {
         ship.position.x += mouseX * speed;
         camera.position.x += mouseX * speed;
         state.mouseX += mouseX * speed;
@@ -158,7 +123,7 @@ function updateShipPosition(state) {
         state.collisionBox.position.x += mouseX * speed;
     }
     //move right
-    else if (state.mouseX < 0) {
+    else if (state.mouseX < 0 && ship.position.x > state.canal.x1) {
         //console.log(Math.abs(mouseX) * speed);
         ship.position.x -= Math.abs(mouseX) * speed;
         camera.position.x -= Math.abs(mouseX) * speed;
@@ -255,17 +220,19 @@ function setupMouseMove(state) {
  * @param {array of coordinates for position(x,y,z)} initialPosition 
  * @purpose Loads an obj file and applies it's material to it
  */
-function loadModel(state, objURL, mtlURL, initialPosition, isPlayer) {
+function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath) {
+
     var mtlLoader = new THREE.MTLLoader();
-    mtlLoader.setPath('../models/');
+    mtlLoader.setPath(basePath);
     var url = mtlURL;
+
     mtlLoader.load(url, function (materials) {
         console.log(materials);
         materials.preload();
 
         var objLoader = new THREE.OBJLoader();
         objLoader.setMaterials(materials);
-        objLoader.setPath('../models/');
+        objLoader.setPath(basePath);
         objLoader.load(objURL, function (object) {
             object.position.set(initialPosition[0], initialPosition[1], initialPosition[2])
 
@@ -292,6 +259,7 @@ function loadModelNoMaterial(state, objURL, initialPosition, isPlayer) {
     let material = new THREE.MeshStandardMaterial({
         roughness: 0.8,
         color: new THREE.Color(0xff0000),
+
     });
     var objLoader = new THREE.OBJLoader();
     objLoader.setMaterials(material);
@@ -435,10 +403,11 @@ function createTube(state, lengthVal, color, pointsArray, tubularSeg, radius, ra
  */
 function setupPlane(state) {
     let side = 120;
-    geometry = new THREE.PlaneGeometry(side, side, side * 5, side * 5);
+    geometry = new THREE.PlaneGeometry(side * 5, side * 10);
     let material = new THREE.MeshStandardMaterial({
         roughness: 0.8,
-        color: new THREE.Color(0x000000),
+        color: new THREE.Color(0x777777),
+        side: THREE.FrontSide
     });
     plane = new THREE.Mesh(geometry, material);
     plane.castShadow = false;
@@ -453,13 +422,39 @@ function setupPlane(state) {
     state.scene.add(plane);
 }
 
-function checkCollision(state, collisionType) {
-    if (collisionType === "wall") {
+function checkCollision(state, collision, collisionResults) {
+
+    if (collision.type === "wall") {
         state.moving = false;
+        console.log("hit a wall!")
     }
-    else if (collisionType === "tube") {
-        console.log("TUBE");
-    }
+
+}
+
+function drawLine(state) {
+    
+    var material = new THREE.LineBasicMaterial({
+        color: 0x00ff00
+    });
+    
+    var geometry = new THREE.Geometry();
+    geometry.vertices.push(
+        new THREE.Vector3( -10, 0, 10 ),
+        new THREE.Vector3( 0, 10, 10 )
+    );
+    
+    var line = new THREE.Line( geometry, material );
+    state.line = line;
+    state.scene.add( line );
+}
+
+function updateLine(state) {
+    //console.log(state.line.geometry.vertices);
+    //console.log(state.line.geometry.vertices[0]);
+    //console.log(state.line.geometry.vertices);
+    //state.line.geometry.vertices[0].x += 0.5;
+    //state.line.geometry.verticesNeedUpdate = true;
+
 }
 
 

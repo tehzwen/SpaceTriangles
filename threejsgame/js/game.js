@@ -13,8 +13,12 @@ function main() {
         flySpeed: 0.3,
         mouseX: 0,
         mouseY: 0,
-        moving: true,
-        finishedLoad: false
+        moving: false,
+        finishedLoad: false,
+        canal: {
+            x0: 40,
+            x1: -40
+        }
 
     }
 
@@ -30,6 +34,9 @@ function main() {
     createLight(state, scene, false, 0, 100, 5);
     createLight(state, scene, true, 0, 50, 5);
     createLight(state, scene, false, -70, 100, 5);
+
+    var AmbientLight = new THREE.AmbientLight(0x404040); // soft white light
+    scene.add(AmbientLight);
 
     //create renderer
     var renderer = new THREE.WebGLRenderer();
@@ -63,10 +70,10 @@ function main() {
                 state.camera.position.z += state.flySpeed;
                 state.plane.position.z += state.flySpeed;
 
-                for (let i = 0; i < state.lights.length; i++){
+                for (let i = 0; i < state.lights.length; i++) {
                     state.lights[i].position.z += state.flySpeed;
                 }
-                
+
                 state.collisionBox.position.z += state.flySpeed;
             }
 
@@ -86,7 +93,7 @@ function main() {
             }
 
             if (state.collidableObjects.length > 0) {
-                //console.log("detecting....");
+                console.log("detecting....");
                 for (var vertexIndex = 0; vertexIndex < state.collisionBox.geometry.vertices.length; vertexIndex++) {
                     var localVertex = state.collisionBox.geometry.vertices[vertexIndex].clone();
                     var globalVertex = state.collisionBox.matrix.multiplyVector3(localVertex);
@@ -95,16 +102,13 @@ function main() {
                     var ray = new THREE.Raycaster(state.collisionBox.position, directionVector.clone().normalize());
                     var collisionResults = ray.intersectObjects(state.collidableObjects);
                     if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
-                        // a collision occurred... do something...
-
 
                         for (let i = 0; i < state.collidableObjects.length; i++) {
-                            checkCollision(state, state.collidableObjects[i].type);
+                            checkCollision(state, state.collidableObjects[i], collisionResults);
                         }
 
-
                     }
-                    else if (collisionResults.length) {
+                    else {
                         state.moving = true;
                     }
                 }
@@ -113,6 +117,7 @@ function main() {
             //update the ship location
             updateShipPosition(state);
             collidableDistanceCheck(state, 30);
+            updateLine(state);
 
         }
 
@@ -124,7 +129,7 @@ function main() {
     animate();
 }
 
-function createLight(state, scene, shadow, positionX, positionY, positionZ){
+function createLight(state, scene, shadow, positionX, positionY, positionZ) {
     var light = new THREE.PointLight(0xffffff, 1, 100);
     light.shadow.mapSize.width = 512;  // default
     light.shadow.mapSize.height = 512; // default
@@ -144,47 +149,55 @@ function createLight(state, scene, shadow, positionX, positionY, positionZ){
 function initObjects(state) {
 
     //load tiefighter model
-    loadModel(state, '../models/tiefighter.obj', '../models/tiefighter.mtl', [0, 0, 10], true);
+    loadModel(state, '../models/tiefighter.obj', '../models/tiefighter.mtl', [0, 0, 10], true, '../models/');
+
+    drawLine(state);
 
     loadJSON('../gameData/level.json',
-        function (data) { 
+        function (data) {
             //console.log(data);
-            createObjs(data, state); 
+            createObjs(data, state);
         },
         function (xhr) { console.error(xhr); }
     );
 
-
-
     //creating simple green box here
     //let cube = createCube([5, 15, 100], true, true, true, [10, 10, 10], 0x00FF00);
-    let cube = createCubeWithTexture([5, 15, 100], true, true, true, [10, 10, 10], '../images/poggers.png', "repeat", "repeat", (4,4));
+    let cube = createCubeWithTexture([5, 15, 100], true, true, true, [10, 10, 10], '../images/poggers.png', "repeat", "repeat", (4, 4));
     cube.type = "wall"
     state.objects.push(cube);
     state.scene.add(cube);
 
     //create collision box 
-    state.collisionBox = createCube([0, 0, 10], false, false, false, [5, 5, 5], 0x000000);
+    state.collisionBox = createCube([0, 0, 10], false, false, false, [10, 10, 10], 0x000000);
     state.scene.add(state.collisionBox);
 
 }
 
-function createObjs(data, state){
-    for (let i = 0; i < data.length; i++){
-        if (data[i].type === "cube"){
-            
+function createObjs(data, state) {
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].type === "cube") {
+
             // If the cube has a diffuse and no texture
-            if (data[i].material.diffuse != null){
+            if (data[i].material.diffuse != null) {
                 let cube = createCube(data[i].position, true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.diffuse);
-                cube.type = "wall";
-                state.objects.push(cube);
+                if (data[i].collidable === true) {
+                    cube.type = "wall";
+                    state.objects.push(cube);
+                }
+
+
                 state.scene.add(cube);
+                //console.log(cube);
             }
             // If the cube has a texture and no diffuse
-            else{
+            else {
                 let cube = createCubeWithTexture(data[i].position, true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.texture);
-                cube.type = "wall";
-                state.objects.push(cube);
+                if (data[i].collidable === true) {
+                    cube.type = "wall";
+                    state.objects.push(cube);
+                }
+
                 state.scene.add(cube);
             }
         }
