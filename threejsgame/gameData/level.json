@@ -15,6 +15,7 @@
     },
     {
         "type": "cube",
+        "ID": "rightStraightWall-0",
         "collidable": false,
         "position": [-50, 12, 300],
         "geometry": {"width": 15,"height": 50, "depth": 100},
@@ -22,22 +23,9 @@
     },
     {
         "type": "cube",
+        "ID": "leftStraightWall-0",
         "collidable": false,
         "position": [50, 12, 300],
-        "geometry": {"width": 15,"height": 50, "depth": 100},
-        "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
-    },
-    {
-        "type": "cube",
-        "collidable": false,
-        "position": [-50, 12, 400],
-        "geometry": {"width": 15,"height": 50, "depth": 100},
-        "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
-    },
-    {
-        "type": "cube",
-        "collidable": false,
-        "position": [50, 12, 400],
         "geometry": {"width": 15,"height": 50, "depth": 100},
         "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
     },

@@ -10,10 +10,10 @@ function main() {
         selectedIndex: 0,
         camera: null,
         scene: null,
-        flySpeed: 0.3,
+        flySpeed: 1,
         mouseX: 0,
         mouseY: 0,
-        moving: false,
+        moving: true,
         finishedLoad: false,
         canal: {
             x0: 40,
@@ -178,6 +178,34 @@ function createObjs(data, state) {
     for (let i = 0; i < data.length; i++) {
         if (data[i].type === "cube") {
 
+            // This will handle the creation of the canal walls to go as long as the level is
+            if (data[i].ID === "rightStraightWall-0"){
+                let pastPosition = data[i].position[2];
+
+                for (var j = 0; j < 30; j++){
+                    let currentPosition = pastPosition + 100; 
+
+                    let cube = createCubeWithTexture([data[i].position[0], data[i].position[1], currentPosition], true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.texture);
+                    
+                    state.scene.add(cube);
+
+                    pastPosition = currentPosition;
+                }
+            }
+            else if (data[i].ID === "leftStraightWall-0"){
+                let pastPosition = data[i].position[2];
+
+                for (var j = 0; j < 30; j++){
+                    let currentPosition = pastPosition + 100; 
+
+                    let cube = createCubeWithTexture([data[i].position[0], data[i].position[1], currentPosition], true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.texture);
+                    
+                    state.scene.add(cube);
+
+                    pastPosition = currentPosition;
+                }
+            }
+            
             // If the cube has a diffuse and no texture
             if (data[i].material.diffuse != null) {
                 let cube = createCube(data[i].position, true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.diffuse);
@@ -188,7 +216,6 @@ function createObjs(data, state) {
 
 
                 state.scene.add(cube);
-                //console.log(cube);
             }
             // If the cube has a texture and no diffuse
             else {

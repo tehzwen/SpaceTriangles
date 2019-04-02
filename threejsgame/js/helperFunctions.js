@@ -112,7 +112,7 @@ function updateShipPosition(state) {
     var camera = state.camera;
     var mouseX = state.mouseX;
     var mouseY = state.mouseY;
-    let speed = 0.0008;
+    let speed = 0.0009;
 
     //move left
     if (state.mouseX > 0 && ship.position.x < state.canal.x0) {
