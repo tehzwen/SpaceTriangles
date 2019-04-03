@@ -140,6 +140,8 @@ function main() {
             collidableDistanceCheck(state, 30);
             updateLine(state);
 
+            console.log(state.collidableObjects);
+
         }
 
 
@@ -164,13 +166,22 @@ function createLight(state, scene, shadow, positionX, positionY, positionZ) {
 
 /**
  * 
+ * @param {Object from the json file} object 
+ * @purpose Takes in an object from the json file and translates the object left and right within the canal
+ */
+function movableRock(object){
+    // Moving the object left and right
+}
+
+/**
+ * 
  * @param {State variable holding game information} state 
  * @purpose Creates objects for the game and places them in the scene
  */
 function initObjects(state) {
 
     //load tiefighter model
-    loadModel(state, '../models/tiefighter.obj', '../models/tiefighter.mtl', [0, 0, 10], true, '../models/');
+    loadModel(state, '../models/tiefighter.obj', '../models/tiefighter.mtl', [0, 0, 10], true, '../models/', [1, 1, 1], null);
 
     drawLine(state);
 
@@ -247,6 +258,21 @@ function createObjs(data, state) {
                 }
 
                 state.scene.add(cube);
+            }
+        }
+        else if (data[i].type === "asteroid"){
+            loadModel(state, '../models/RockPackByPava.obj', '../models/RockPackByPava.mtl', data[i].position, false, '../models/', data[i].scale, data[i].collidable);
+            let cube = createCube(data[i].position, true, true, true, data[i].scale, "0x9dbdf2");
+            
+            // Assign a cube to the model for collision detection
+            cube.type = "wall";
+
+            state.objects.push(cube);
+            state.scene.add(cube);
+
+            // If the model is supposed to be moving, pass it and the cube assigned to the function to translate it left and right
+            if (data[i].moving === true){
+                movableRock(data[i]);
             }
         }
     }

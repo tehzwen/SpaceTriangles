@@ -2,38 +2,215 @@
     {
         "type": "cube",
         "ID": "leftHorizontalWall",
-        "position": [150, 12, 300],
-        "geometry": {"width": 200,"height": 50, "depth": 100},
+        "moving": false,
+        "position": [142, 12, 299],
+        "geometry": {"width": 200,"height": 60, "depth": 100},
+        "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
+    },
+    {
+        "type": "cube",
+        "ID": "leftHorizontalWall",
+        "moving": false,
+        "position": [320, 12, 300],
+        "geometry": {"width": 200,"height": 60, "depth": 100},
         "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
     },
     {
         "type": "cube",
         "ID": "rightHorizontalWall",
-        "position": [-150, 12, 300],
-        "geometry": {"width": 200,"height": 50, "depth": 100},
+        "moving": false,
+        "position": [-142, 12, 299],
+        "geometry": {"width": 200,"height": 60, "depth": 100},
+        "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
+    },
+    {
+        "type": "cube",
+        "ID": "rightHorizontalWall",
+        "moving": false,
+        "position": [-320, 12, 300],
+        "geometry": {"width": 200,"height": 60, "depth": 100},
         "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
     },
     {
         "type": "cube",
         "ID": "rightStraightWall-0",
+        "moving": false,
         "collidable": false,
         "position": [-50, 12, 300],
-        "geometry": {"width": 15,"height": 50, "depth": 100},
+        "geometry": {"width": 15,"height": 60, "depth": 100},
         "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
     },
     {
         "type": "cube",
         "ID": "leftStraightWall-0",
+        "moving": false,
         "collidable": false,
         "position": [50, 12, 300],
-        "geometry": {"width": 15,"height": 50, "depth": 100},
+        "geometry": {"width": 15,"height": 60, "depth": 100},
         "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
     },
     {
         "type": "cube",
+        "moving": false,
         "collidable": true,
-        "position": [-50, 20, 130],
-        "geometry": {"width": 20,"height": 20, "depth": 15},
+        "position": [0, 10, 260],
+        "geometry": {"width": 30,"height": 40, "depth": 15},
         "material": {"diffuse": null, "texture": "../images/Lipton.jpg"}
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [29, 15, 400],
+        "scale": [30, 50, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-30, 15, 400],
+        "scale": [30, 50, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [0, 10, 480],
+        "scale": [30, 50, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [30, 10, 560],
+        "scale": [30, 30, 30]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-20, 30, 600],
+        "scale": [30, 30, 30]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-10, 20, 650],
+        "scale": [30, 50, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [10, 20, 680],
+        "scale": [30, 50, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [10, 20, 800],
+        "scale": [30, 50, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-30, 20, 880],
+        "scale": [30, 30, 30]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [30, 20, 880],
+        "scale": [30, 30, 30]
+    },
+    {
+        "type": "cube",
+        "moving": false,
+        "collidable": true,
+        "position": [15, 18, 950],
+        "geometry": {"width": 50,"height": 45, "depth": 15},
+        "material": {"diffuse": "0x9dbdf2", "texture": null}
+    },
+    {
+        "type": "cube",
+        "moving": false,
+        "collidable": true,
+        "position": [-15, 18, 1020],
+        "geometry": {"width": 50,"height": 45, "depth": 15},
+        "material": {"diffuse": "0x9dbdf2", "texture": null}
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [30, 30, 1100],
+        "scale": [30, 30, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-30, 10, 1100],
+        "scale": [30, 30, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-20, 20, 1190],
+        "scale": [30, 40, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [30, 20, 1240],
+        "scale": [30, 40, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [10, 20, 1290],
+        "scale": [30, 40, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-25, 20, 1350],
+        "scale": [30, 50, 30]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [15, 30, 1450],
+        "scale": [30, 30, 25]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [25, 22, 1420],
+        "scale": [30, 30, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-30, 22, 1460],
+        "scale": [20, 50, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": true,
+        "collidable": true,
+        "position": [-25, 22, 1800],
+        "scale": [20, 40, 20]
     }
 ]

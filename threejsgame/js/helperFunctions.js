@@ -241,9 +241,11 @@ function setupMouseMove(state) {
  * @param {string url of the obj file} objURL 
  * @param {string url of the mtl file} mtlURL 
  * @param {array of coordinates for position(x,y,z)} initialPosition 
+ * @param {array for scaling of object} scale
+ * @param {boolean for if the object is collidable}
  * @purpose Loads an obj file and applies it's material to it
  */
-function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath) {
+function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, scale, collidable) {
 
     var mtlLoader = new THREE.MTLLoader();
     mtlLoader.setPath(basePath);
@@ -265,10 +267,15 @@ function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath) {
             });
 
             if (isPlayer) {
+                object.scale.set(scale[0], scale[1], scale[2]);
                 state.ship = object;
                 state.scene.add(object);
+
+
             }
             else {
+                object.scale.set(scale[0], scale[1], scale[2]);
+
                 state.objects.push(object);
                 state.scene.add(object);
             }
