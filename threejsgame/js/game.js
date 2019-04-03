@@ -17,14 +17,35 @@ function main() {
         finishedLoad: false,
         canal: {
             x0: 40,
-            x1: -40
-        }
+            x1: -40,
+            y0: 40
+        },
+        flySoundPlaying: false,
+        flySounds: [],
+        flySoundsPaths: [
+            'sounds/TIE-Fly1.wav',
+            'sounds/TIE-Fly2.wav',
+            'sounds/TIE-Fly3.wav',
+            'sounds/TIE-Fly4.wav',
+            'sounds/TIE-Fly5.wav',
+            'sounds/TIE-Fly6.wav',
+            'sounds/TIE-Fly7.wav']
 
     }
 
     //create scene and camera
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    var listener = new THREE.AudioListener();
+    camera.add(listener);
+    state.listener = listener;
+
+    var sound = new THREE.Audio(state.listener);
+    var audioLoader = new THREE.AudioLoader();
+    //playSound(state, 'sounds/starwarsSong.mp3', audioLoader, 0.25, true, false)
+
+    state.audioLoader = audioLoader;
+
     camera.position.z = -5;
     camera.position.y = 1;
     state.scene = scene;
@@ -179,33 +200,33 @@ function createObjs(data, state) {
         if (data[i].type === "cube") {
 
             // This will handle the creation of the canal walls to go as long as the level is
-            if (data[i].ID === "rightStraightWall-0"){
+            if (data[i].ID === "rightStraightWall-0") {
                 let pastPosition = data[i].position[2];
 
-                for (var j = 0; j < 30; j++){
-                    let currentPosition = pastPosition + 100; 
+                for (var j = 0; j < 30; j++) {
+                    let currentPosition = pastPosition + 100;
 
                     let cube = createCubeWithTexture([data[i].position[0], data[i].position[1], currentPosition], true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.texture);
-                    
+
                     state.scene.add(cube);
 
                     pastPosition = currentPosition;
                 }
             }
-            else if (data[i].ID === "leftStraightWall-0"){
+            else if (data[i].ID === "leftStraightWall-0") {
                 let pastPosition = data[i].position[2];
 
-                for (var j = 0; j < 30; j++){
-                    let currentPosition = pastPosition + 100; 
+                for (var j = 0; j < 30; j++) {
+                    let currentPosition = pastPosition + 100;
 
                     let cube = createCubeWithTexture([data[i].position[0], data[i].position[1], currentPosition], true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.texture);
-                    
+
                     state.scene.add(cube);
 
                     pastPosition = currentPosition;
                 }
             }
-            
+
             // If the cube has a diffuse and no texture
             if (data[i].material.diffuse != null) {
                 let cube = createCube(data[i].position, true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.diffuse);

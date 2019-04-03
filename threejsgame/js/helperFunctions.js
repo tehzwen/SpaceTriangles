@@ -114,6 +114,28 @@ function updateShipPosition(state) {
     var mouseY = state.mouseY;
     let speed = 0.0009;
 
+    //console.log(state.audioLoader);
+    //console.log(state.audioLoader.isPlaying);
+
+    if (state.mouseX > 700 || state.mouseX < -700) {
+
+        if (state.flySounds.length <= 0) {
+
+            var rand = state.flySoundsPaths[Math.floor(Math.random() * state.flySoundsPaths.length)];
+
+            let sound = playSound(state, rand, state.audioLoader, 0.15, false)
+            state.flySounds.push(sound);
+        }
+        else {
+            if (state.flySounds[0].isPlaying) {
+                console.log("here");
+            }
+            else{
+                state.flySounds.pop();
+            }
+        }
+    }
+
     //move left
     if (state.mouseX > 0 && ship.position.x < state.canal.x0) {
         ship.position.x += mouseX * speed;
@@ -132,7 +154,7 @@ function updateShipPosition(state) {
         state.collisionBox.position.x -= Math.abs(mouseX) * speed;
     }
     //move up
-    if (mouseY > 0) {
+    if (mouseY > 0 && ship.position.y < state.canal.y0) {
 
         ship.position.y += mouseY * speed;
         camera.position.y += mouseY * speed;
@@ -151,6 +173,7 @@ function updateShipPosition(state) {
         }
 
     }
+
 }
 
 
@@ -432,20 +455,20 @@ function checkCollision(state, collision, collisionResults) {
 }
 
 function drawLine(state) {
-    
+
     var material = new THREE.LineBasicMaterial({
         color: 0x00ff00
     });
-    
+
     var geometry = new THREE.Geometry();
     geometry.vertices.push(
-        new THREE.Vector3( -10, 0, 10 ),
-        new THREE.Vector3( 0, 10, 10 )
+        new THREE.Vector3(-10, 0, 10),
+        new THREE.Vector3(0, 10, 10)
     );
-    
-    var line = new THREE.Line( geometry, material );
+
+    var line = new THREE.Line(geometry, material);
     state.line = line;
-    state.scene.add( line );
+    state.scene.add(line);
 }
 
 function updateLine(state) {
@@ -479,4 +502,31 @@ function loadJSON(path, success, error) {
     };
     xhr.open("GET", path, true);
     xhr.send();
+}
+
+function playSound(state, path, audioLoader, volume, loop, flySound) {
+
+    let sound = new THREE.Audio(state.listener);
+
+    audioLoader.load(path, function (buffer) {
+        sound.setBuffer(buffer);
+        sound.setLoop(loop);
+        sound.setVolume(volume);
+        sound.play();
+    });
+
+    return sound;
+}
+
+function checkIfSoundsPlaying(state) {
+    for (let i = 0; i < state.flySounds.length; i++) {
+
+        console.log(state.flySounds[0].isPlaying);
+        if (state.flySounds[i].isPlaying) {
+            state.flySoundPlaying = true;
+        }
+        else {
+            state.flySounds.pop();
+        }
+    }
 }
