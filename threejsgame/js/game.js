@@ -114,7 +114,7 @@ function main() {
             }
 
             if (state.collidableObjects.length > 0) {
-                console.log("detecting....");
+                //console.log("detecting....");
                 for (var vertexIndex = 0; vertexIndex < state.collisionBox.geometry.vertices.length; vertexIndex++) {
                     var localVertex = state.collisionBox.geometry.vertices[vertexIndex].clone();
                     var globalVertex = state.collisionBox.matrix.multiplyVector3(localVertex);
@@ -262,7 +262,7 @@ function createObjs(data, state) {
         }
         else if (data[i].type === "asteroid"){
             loadModel(state, '../models/RockPackByPava.obj', '../models/RockPackByPava.mtl', data[i].position, false, '../models/', data[i].scale, data[i].collidable);
-            let cube = createCube(data[i].position, true, true, true, data[i].scale, "0x9dbdf2");
+            let cube = createCube(data[i].position, true, true, true, data[i].scale, 0x000000, true, 0.0);
             
             // Assign a cube to the model for collision detection
             cube.type = "wall";

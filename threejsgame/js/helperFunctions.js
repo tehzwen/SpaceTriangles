@@ -39,9 +39,9 @@ function collidableDistanceCheck(state, distanceThreshold) {
  * @return cube - cube object
  * @purpose creates a cube and returns it
  */
-function createCube(position, castShadow, receiveShadow, visible, geometryVals, color) {
+function createCube(position, castShadow, receiveShadow, visible, geometryVals, color, transparent, opacity) {
     var geometry = new THREE.BoxGeometry(geometryVals[0], geometryVals[1], geometryVals[2]);
-    var material = new THREE.MeshPhongMaterial({ color: color });
+    var material = new THREE.MeshPhongMaterial({ color: color, transparent:transparent, opacity:opacity });
     var cube = new THREE.Mesh(geometry, material);
     cube.position.x = position[0];
     cube.position.y = position[1];
@@ -245,7 +245,7 @@ function setupMouseMove(state) {
  * @param {boolean for if the object is collidable}
  * @purpose Loads an obj file and applies it's material to it
  */
-function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, scale, collidable) {
+function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, scale) {
 
     var mtlLoader = new THREE.MTLLoader();
     mtlLoader.setPath(basePath);
@@ -276,7 +276,7 @@ function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, s
             else {
                 object.scale.set(scale[0], scale[1], scale[2]);
 
-                state.objects.push(object);
+                //state.objects.push(object);
                 state.scene.add(object);
             }
 
@@ -456,7 +456,7 @@ function checkCollision(state, collision, collisionResults) {
 
     if (collision.type === "wall") {
         state.moving = false;
-        console.log("hit a wall!")
+        //console.log("hit a wall!")
     }
 
 }
