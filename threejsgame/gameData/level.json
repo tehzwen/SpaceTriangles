@@ -5,7 +5,7 @@
         "moving": false,
         "position": [142, 12, 299],
         "geometry": {"width": 200,"height": 60, "depth": 100},
-        "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
+        "material": {"diffuse": null, "texture": "../images/death_star1.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "cube",
@@ -13,7 +13,7 @@
         "moving": false,
         "position": [320, 12, 300],
         "geometry": {"width": 200,"height": 60, "depth": 100},
-        "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
+        "material": {"diffuse": null, "texture": "../images/death_star1.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "cube",
@@ -21,7 +21,7 @@
         "moving": false,
         "position": [-142, 12, 299],
         "geometry": {"width": 200,"height": 60, "depth": 100},
-        "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
+        "material": {"diffuse": null, "texture": "../images/death_star1.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "cube",
@@ -29,7 +29,7 @@
         "moving": false,
         "position": [-320, 12, 300],
         "geometry": {"width": 200,"height": 60, "depth": 100},
-        "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
+        "material": {"diffuse": null, "texture": "../images/death_star1.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "cube",
@@ -38,7 +38,7 @@
         "collidable": false,
         "position": [-50, 12, 300],
         "geometry": {"width": 15,"height": 60, "depth": 100},
-        "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
+        "material": {"diffuse": null, "texture": "../images/death_star1.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "cube",
@@ -47,7 +47,7 @@
         "collidable": false,
         "position": [50, 12, 300],
         "geometry": {"width": 15,"height": 60, "depth": 100},
-        "material": {"diffuse": null, "texture": "../images/death_star1.jpg"}
+        "material": {"diffuse": null, "texture": "../images/death_star1.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "cube",
@@ -55,7 +55,7 @@
         "collidable": true,
         "position": [0, 10, 260],
         "geometry": {"width": 30,"height": 40, "depth": 15},
-        "material": {"diffuse": null, "texture": "../images/Lipton.jpg"}
+        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "asteroid",
@@ -63,6 +63,41 @@
         "collidable": true,
         "position": [29, 15, 400],
         "scale": [30, 50, 20]
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [0, 15, 400], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [-15, 15, 440], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [-25, 15, 480], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [-15, 15, 520], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [5, 15, 560], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
     },
     {
         "type": "asteroid",
@@ -107,11 +142,25 @@
         "scale": [30, 50, 20]
     },
     {
+        "type": "powerup",
+        "effect": "health",
+        "position": [-35, 10, 680], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x5bff8f"
+    },
+    {
         "type": "asteroid",
         "moving": false,
         "collidable": true,
         "position": [10, 20, 800],
         "scale": [30, 50, 20]
+    },
+    {
+        "type": "powerup",
+        "effect": "invincible",
+        "position": [20, 20, 840], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0xff2626"
     },
     {
         "type": "asteroid",
@@ -133,7 +182,7 @@
         "collidable": true,
         "position": [15, 18, 950],
         "geometry": {"width": 50,"height": 45, "depth": 15},
-        "material": {"diffuse": "0x9dbdf2", "texture": null}
+        "material": {"diffuse": "0x9dbdf2", "texture": null, "transparent": true, "opacity": 0.5}
     },
     {
         "type": "cube",
@@ -141,7 +190,7 @@
         "collidable": true,
         "position": [-15, 18, 1020],
         "geometry": {"width": 50,"height": 45, "depth": 15},
-        "material": {"diffuse": "0x9dbdf2", "texture": null}
+        "material": {"diffuse": "0x9dbdf2", "texture": null, "transparent": true, "opacity": 0.5}
     },
     {
         "type": "asteroid",
@@ -149,6 +198,13 @@
         "collidable": true,
         "position": [30, 30, 1100],
         "scale": [30, 30, 20]
+    },
+    {
+        "type": "powerup",
+        "effect": "health",
+        "position": [0, 30, 1100], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x5bff8f"
     },
     {
         "type": "asteroid",
@@ -165,11 +221,25 @@
         "scale": [30, 40, 20]
     },
     {
+        "type": "powerup",
+        "effect": "points",
+        "position": [15, 25, 1200], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
         "type": "asteroid",
         "moving": false,
         "collidable": true,
         "position": [30, 20, 1240],
         "scale": [30, 40, 20]
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [-20, 30, 1265], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
     },
     {
         "type": "asteroid",
@@ -193,6 +263,13 @@
         "scale": [30, 30, 25]
     },
     {
+        "type": "powerup",
+        "effect": "points",
+        "position": [-10, 30, 1450], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
         "type": "asteroid",
         "moving": false,
         "collidable": true,
@@ -210,7 +287,234 @@
         "type": "asteroid",
         "moving": true,
         "collidable": true,
-        "position": [-25, 22, 1800],
+        "position": [-25, 22, 1600],
         "scale": [20, 40, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": true,
+        "collidable": true,
+        "position": [25, 22, 1800],
+        "scale": [20, 40, 20]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [25, 22, 2000],
+        "scale": [30, 50, 20]
+    },
+    {
+        "type": "powerup",
+        "effect": "invincible",
+        "position": [0, 30, 2000], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0xff2626"
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-20, 22, 2050],
+        "scale": [30, 30, 30]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-10, 10, 2070],
+        "scale": [30, 30, 30]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [30, 10, 2100],
+        "scale": [50, 30, 30]
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [10, 20, 2050], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "powerup",
+        "effect": "health",
+        "position": [20, 25, 2080], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x5bff8f"
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [0, 30, 2150], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-30, 10, 2200],
+        "scale": [50, 30, 30]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [30, 30, 2260],
+        "scale": [50, 30, 30]
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [-10, 15, 2240], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-10, 25, 2320],
+        "scale": [30, 30, 30]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [30, 30, 2390],
+        "scale": [30, 50, 30]
+    },
+    {
+        "type": "asteroid",
+        "moving": false,
+        "collidable": true,
+        "position": [-30, 30, 2420],
+        "scale": [30, 50, 30]
+    },
+    {
+        "type": "powerup",
+        "effect": "health",
+        "position": [-20, 25, 2480], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x5bff8f"
+    },
+    {
+        "type": "cube",
+        "moving": false,
+        "collidable": true,
+        "position": [15, 18, 2500],
+        "geometry": {"width": 50,"height": 45, "depth": 15},
+        "material": {"diffuse": "0x9dbdf2", "texture": null, "transparent": true, "opacity": 0.5}
+    },
+    {
+        "type": "cube",
+        "moving": false,
+        "collidable": true,
+        "position": [-15, 18, 2580],
+        "geometry": {"width": 50,"height": 45, "depth": 15},
+        "material": {"diffuse": "0x9dbdf2", "texture": null, "transparent": true, "opacity": 0.5}
+    },
+    {
+        "type": "cube",
+        "moving": false,
+        "collidable": true,
+        "position": [15, 18, 2650],
+        "geometry": {"width": 50,"height": 45, "depth": 15},
+        "material": {"diffuse": "0x9dbdf2", "texture": null, "transparent": true, "opacity": 0.5}
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [20, 22, 2580], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [5, 20, 2600], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [-20, 18, 2630], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "cube",
+        "moving": false,
+        "collidable": true,
+        "position": [30, 20, 2800],
+        "geometry": {"width": 30,"height": 30, "depth": 15},
+        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [0, 20, 2800], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "cube",
+        "moving": false,
+        "collidable": true,
+        "position": [-30, 20, 2800],
+        "geometry": {"width": 30,"height": 30, "depth": 15},
+        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
+    },
+    {
+        "type": "cube",
+        "moving": false,
+        "collidable": true,
+        "position": [30, 20, 3000],
+        "geometry": {"width": 30,"height": 30, "depth": 15},
+        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [0, 20, 3000], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "cube",
+        "moving": false,
+        "collidable": true,
+        "position": [-30, 20, 3000],
+        "geometry": {"width": 30,"height": 30, "depth": 15},
+        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
+    },
+    {
+        "type": "cube",
+        "moving": false,
+        "collidable": true,
+        "position": [30, 20, 3200],
+        "geometry": {"width": 30,"height": 30, "depth": 15},
+        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
+    },
+    {
+        "type": "powerup",
+        "effect": "points",
+        "position": [0, 20, 3200], 
+        "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
+        "color": "0x000000"
+    },
+    {
+        "type": "cube",
+        "moving": false,
+        "collidable": true,
+        "position": [-30, 20, 3200],
+        "geometry": {"width": 30,"height": 30, "depth": 15},
+        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
     }
+    
 ]

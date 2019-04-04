@@ -54,6 +54,7 @@ function main() {
     //create white pointlight
     createLight(state, scene, false, 0, 100, 5);
     createLight(state, scene, true, 0, 50, 5);
+    createLight(state, scene, false, 0, 50, 70);
     createLight(state, scene, false, -70, 100, 5);
 
     var AmbientLight = new THREE.AmbientLight(0x404040); // soft white light
@@ -140,8 +141,6 @@ function main() {
             collidableDistanceCheck(state, 30);
             updateLine(state);
 
-            console.log(state.collidableObjects);
-
         }
 
 
@@ -169,7 +168,36 @@ function createLight(state, scene, shadow, positionX, positionY, positionZ) {
  * @param {Object from the json file} object 
  * @purpose Takes in an object from the json file and translates the object left and right within the canal
  */
-function movableRock(object){
+function movableRock(cube){
+    console.log("****************************************");
+    console.log(cube.position);
+    var clock = new THREE.Clock();
+    var delta = 0;
+    var speed = 2;
+    var goingLeft = true;
+
+    function animate(){
+        //onsole.log("movingggggg");
+        delta = clock.getDelta();
+
+        if (cube.position.x < 25.0 && goingLeft === true){
+            cube.translateX(speed*delta);
+
+            if (cube.position.x === 25.0){
+                goingLeft = false;
+            }
+        }
+        else if (cube.position.x > -30.0 && goingLeft === false){
+            cube.translateX(-speed*delta);
+            
+            if (cube.position.x === -25.0){
+                goingLeft = true;
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
     // Moving the object left and right
 }
 
@@ -209,29 +237,24 @@ function initObjects(state) {
 function createObjs(data, state) {
     for (let i = 0; i < data.length; i++) {
         if (data[i].type === "cube") {
-
             // This will handle the creation of the canal walls to go as long as the level is
             if (data[i].ID === "rightStraightWall-0") {
-                let pastPosition = data[i].position[2];
 
+                let pastPosition = data[i].position[2];
                 for (var j = 0; j < 30; j++) {
                     let currentPosition = pastPosition + 100;
-
                     let cube = createCubeWithTexture([data[i].position[0], data[i].position[1], currentPosition], true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.texture);
-
                     state.scene.add(cube);
 
                     pastPosition = currentPosition;
                 }
             }
             else if (data[i].ID === "leftStraightWall-0") {
-                let pastPosition = data[i].position[2];
 
+                let pastPosition = data[i].position[2];
                 for (var j = 0; j < 30; j++) {
                     let currentPosition = pastPosition + 100;
-
                     let cube = createCubeWithTexture([data[i].position[0], data[i].position[1], currentPosition], true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.texture);
-
                     state.scene.add(cube);
 
                     pastPosition = currentPosition;
@@ -240,12 +263,15 @@ function createObjs(data, state) {
 
             // If the cube has a diffuse and no texture
             if (data[i].material.diffuse != null) {
-                let cube = createCube(data[i].position, true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.diffuse);
+                let cube = createCube(data[i].position, true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.diffuse, data[i].material.transparent, data[i].material.opacity);
                 if (data[i].collidable === true) {
                     cube.type = "wall";
                     state.objects.push(cube);
                 }
 
+                if (data[i].moving === true){
+                    movableRock(cube);
+                }
 
                 state.scene.add(cube);
             }
@@ -257,23 +283,37 @@ function createObjs(data, state) {
                     state.objects.push(cube);
                 }
 
+                if (data[i].moving === true){
+                    movableRock(cube);
+                }
+
                 state.scene.add(cube);
             }
         }
         else if (data[i].type === "asteroid"){
-            loadModel(state, '../models/RockPackByPava.obj', '../models/RockPackByPava.mtl', data[i].position, false, '../models/', data[i].scale, data[i].collidable);
-            let cube = createCube(data[i].position, true, true, true, data[i].scale, 0x000000, true, 0.0);
+            loadModel(state, '../models/RockPackByPava.obj', '../models/RockPackByPava.mtl', data[i].position, false, '../models/', data[i].scale);
+            let cube = createCube(data[i].position, true, true, true, data[i].scale, 0x000000, true, 0);
             
             // Assign a cube to the model for collision detection
             cube.type = "wall";
 
             state.objects.push(cube);
             state.scene.add(cube);
-
-            // If the model is supposed to be moving, pass it and the cube assigned to the function to translate it left and right
-            if (data[i].moving === true){
-                movableRock(data[i]);
+        }
+        else if (data[i].type === "powerup"){
+            let cone = createPyramid(data[i].position, true, true, [data[i].geometry.radius, data[i].geometry.height, data[i].geometry.radialSegments], true, data[i].color, false, 0.5);
+            
+            if (data[i].effect === "health"){
+                
             }
+            else if (data[i].effect === "invincible"){
+
+            }
+            else{
+                // it is a point earning powerup
+            }
+            
+            state.scene.add(cone);
         }
     }
     state.finishedLoad = true;

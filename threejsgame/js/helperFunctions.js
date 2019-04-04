@@ -35,13 +35,15 @@ function collidableDistanceCheck(state, distanceThreshold) {
  * @param {Boolean - determines if cube will receive a shadow} receiveShadow 
  * @param {Boolean - determines if cube is visible} visible 
  * @param {Array - Geometry of cube [x,y,z]} geometryVals 
- * @param {Hex - value for color as hex value} color 
+ * @param {Hex - value for color as hex value} color
+ * @param {Boolean - determines if the object is transparent} transparent
+ * @param {float - determines the value for object's opacity} opacity 
  * @return cube - cube object
  * @purpose creates a cube and returns it
  */
 function createCube(position, castShadow, receiveShadow, visible, geometryVals, color, transparent, opacity) {
     var geometry = new THREE.BoxGeometry(geometryVals[0], geometryVals[1], geometryVals[2]);
-    var material = new THREE.MeshPhongMaterial({ color: color, transparent:transparent, opacity:opacity });
+    var material = new THREE.MeshPhongMaterial({ color: color, transparent: transparent, opacity: opacity });
     var cube = new THREE.Mesh(geometry, material);
     cube.position.x = position[0];
     cube.position.y = position[1];
@@ -70,8 +72,25 @@ function createCubeWithTexture(position, castShadow, receiveShadow, visible, geo
     cube.visible = visible;
 
     return cube;
+}
 
+function createPyramid(position, castShadow, receiveShadow, geometryVals, visible, color, transparent, opacity){
+    let geometry = new THREE.ConeGeometry(geometryVals[0], geometryVals[1], geometryVals[2]);
+    let material = new THREE.MeshPhongMaterial({
+        color: color,
+        transparent: transparent,
+        opacity: opacity
+    });
+    let cone = new THREE.Mesh(geometry, material);
 
+    cone.position.x = position[0];
+    cone.position.y = position[1];
+    cone.position.z = position[2];
+    cone.castShadow = castShadow;
+    cone.receiveShadow = receiveShadow;
+    cone.visible = visible;
+
+    return cone;
 }
 
 
@@ -130,7 +149,7 @@ function updateShipPosition(state) {
             if (state.flySounds[0].isPlaying) {
                 console.log("here");
             }
-            else{
+            else {
                 state.flySounds.pop();
             }
         }
@@ -275,8 +294,6 @@ function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, s
             }
             else {
                 object.scale.set(scale[0], scale[1], scale[2]);
-
-                //state.objects.push(object);
                 state.scene.add(object);
             }
 
