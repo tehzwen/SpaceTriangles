@@ -69,35 +69,35 @@
         "effect": "points",
         "position": [0, 15, 400], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "powerup",
         "effect": "points",
         "position": [-15, 15, 440], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "powerup",
         "effect": "points",
         "position": [-25, 15, 480], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "powerup",
         "effect": "points",
         "position": [-15, 15, 520], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "powerup",
         "effect": "points",
         "position": [5, 15, 560], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "asteroid",
@@ -225,7 +225,7 @@
         "effect": "points",
         "position": [15, 25, 1200], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "asteroid",
@@ -239,7 +239,7 @@
         "effect": "points",
         "position": [-20, 30, 1265], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "asteroid",
@@ -267,7 +267,7 @@
         "effect": "points",
         "position": [-10, 30, 1450], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "asteroid",
@@ -337,7 +337,7 @@
         "effect": "points",
         "position": [10, 20, 2050], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "powerup",
@@ -351,7 +351,7 @@
         "effect": "points",
         "position": [0, 30, 2150], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "asteroid",
@@ -372,7 +372,7 @@
         "effect": "points",
         "position": [-10, 15, 2240], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "asteroid",
@@ -431,21 +431,21 @@
         "effect": "points",
         "position": [20, 22, 2580], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "powerup",
         "effect": "points",
         "position": [5, 20, 2600], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "powerup",
         "effect": "points",
         "position": [-20, 18, 2630], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "cube",
@@ -460,7 +460,7 @@
         "effect": "points",
         "position": [0, 20, 2800], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "cube",
@@ -483,7 +483,7 @@
         "effect": "points",
         "position": [0, 20, 3000], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "cube",
@@ -506,7 +506,7 @@
         "effect": "points",
         "position": [0, 20, 3200], 
         "geometry": {"radius": 2, "height": 4, "radialSegments": 6},
-        "color": "0x000000"
+        "color": "0xFFFFFF"
     },
     {
         "type": "cube",

@@ -42,6 +42,11 @@ function collidableDistanceCheck(state, distanceThreshold) {
  * @purpose creates a cube and returns it
  */
 function createCube(position, castShadow, receiveShadow, visible, geometryVals, color, transparent, opacity) {
+
+    if (typeof (color) === 'string') {
+        color = parseInt(color, 16);
+    }
+
     var geometry = new THREE.BoxGeometry(geometryVals[0], geometryVals[1], geometryVals[2]);
     var material = new THREE.MeshPhongMaterial({ color: color, transparent: transparent, opacity: opacity });
     var cube = new THREE.Mesh(geometry, material);
@@ -74,7 +79,9 @@ function createCubeWithTexture(position, castShadow, receiveShadow, visible, geo
     return cube;
 }
 
-function createPyramid(position, castShadow, receiveShadow, geometryVals, visible, color, transparent, opacity){
+function createPyramid(position, castShadow, receiveShadow, geometryVals, visible, color, transparent, opacity) {
+
+    color = parseInt(color, 16);
     let geometry = new THREE.ConeGeometry(geometryVals[0], geometryVals[1], geometryVals[2]);
     let material = new THREE.MeshPhongMaterial({
         color: color,
@@ -89,6 +96,7 @@ function createPyramid(position, castShadow, receiveShadow, geometryVals, visibl
     cone.castShadow = castShadow;
     cone.receiveShadow = receiveShadow;
     cone.visible = visible;
+    cone.type = "powerup";
 
     return cone;
 }
@@ -135,63 +143,68 @@ function updateShipPosition(state) {
 
     //console.log(state.audioLoader);
     //console.log(state.audioLoader.isPlaying);
+    if (state.healthVal > 0) {
 
-    if (state.mouseX > 700 || state.mouseX < -700) {
+        if (state.mouseX > 700 || state.mouseX < -700) {
 
-        if (state.flySounds.length <= 0) {
+            if (state.flySounds.length <= 0) {
 
-            var rand = state.flySoundsPaths[Math.floor(Math.random() * state.flySoundsPaths.length)];
+                var rand = state.flySoundsPaths[Math.floor(Math.random() * state.flySoundsPaths.length)];
 
-            let sound = playSound(state, rand, state.audioLoader, 0.15, false)
-            state.flySounds.push(sound);
-        }
-        else {
-            if (state.flySounds[0].isPlaying) {
-                console.log("here");
+                let sound = playSound(state, rand, state.audioLoader, 0.15, false)
+                state.flySounds.push(sound);
             }
             else {
-                state.flySounds.pop();
+                if (state.flySounds[0].isPlaying) {
+                    console.log("here");
+                }
+                else {
+                    state.flySounds.pop();
+                }
             }
         }
-    }
 
-    //move left
-    if (state.mouseX > 0 && ship.position.x < state.canal.x0) {
-        ship.position.x += mouseX * speed;
-        camera.position.x += mouseX * speed;
-        state.mouseX += mouseX * speed;
-        state.plane.position.x += mouseX * speed;
-        state.collisionBox.position.x += mouseX * speed;
-    }
-    //move right
-    else if (state.mouseX < 0 && ship.position.x > state.canal.x1) {
-        //console.log(Math.abs(mouseX) * speed);
-        ship.position.x -= Math.abs(mouseX) * speed;
-        camera.position.x -= Math.abs(mouseX) * speed;
-        state.mousex -= Math.abs(mouseX) * speed;
-        state.plane.position.x -= Math.abs(mouseX) * speed;
-        state.collisionBox.position.x -= Math.abs(mouseX) * speed;
-    }
-    //move up
-    if (mouseY > 0 && ship.position.y < state.canal.y0) {
-
-        ship.position.y += mouseY * speed;
-        camera.position.y += mouseY * speed;
-        state.mouseY += mouseY * speed;
-        state.collisionBox.position.y += mouseY * speed;
-    }
-    //move down
-    else if (mouseY < 0) {
-
-        //check if above plane
-        if (ship.position.y > -2) {
-            ship.position.y -= Math.abs(mouseY) * speed;
-            camera.position.y -= Math.abs(mouseY) * speed;
-            state.mouseY -= Math.abs(mouseY) * speed;
-            state.collisionBox.position.y -= Math.abs(mouseY) * speed;
+        //move left
+        if (state.mouseX > 0 && ship.position.x < state.canal.x0) {
+            //console.log("MOVING MOUSE");
+            ship.position.x += mouseX * speed;
+            camera.position.x += mouseX * speed;
+            state.mouseX += mouseX * speed;
+            state.plane.position.x += mouseX * speed;
+            state.collisionBox.position.x += mouseX * speed;
         }
+        //move right
+        else if (state.mouseX < 0 && ship.position.x > state.canal.x1) {
+            //console.log(Math.abs(mouseX) * speed);
+            ship.position.x -= Math.abs(mouseX) * speed;
+            camera.position.x -= Math.abs(mouseX) * speed;
+            state.mousex -= Math.abs(mouseX) * speed;
+            state.plane.position.x -= Math.abs(mouseX) * speed;
+            state.collisionBox.position.x -= Math.abs(mouseX) * speed;
+        }
+        //move up
+        if (mouseY > 0 && ship.position.y < state.canal.y0) {
 
+            ship.position.y += mouseY * speed;
+            camera.position.y += mouseY * speed;
+            state.mouseY += mouseY * speed;
+            state.collisionBox.position.y += mouseY * speed;
+        }
+        //move down
+        else if (mouseY < 0) {
+
+            //check if above plane
+            if (ship.position.y > -2) {
+                ship.position.y -= Math.abs(mouseY) * speed;
+                camera.position.y -= Math.abs(mouseY) * speed;
+                state.mouseY -= Math.abs(mouseY) * speed;
+                state.collisionBox.position.y -= Math.abs(mouseY) * speed;
+            }
+
+        }
     }
+
+
 
 }
 
@@ -204,7 +217,8 @@ function updateShipPosition(state) {
 function setupMouseMove(state) {
     document.addEventListener("mousemove", (event) => {
 
-        if (state.objects[state.selectedIndex]) {
+
+        if (state.ship) {
             /*Get offset of mouse from screen center */
             let movementX = window.innerWidth / 2 - event.clientX;
             let movementY = window.innerHeight / 2 - event.clientY;
@@ -264,14 +278,14 @@ function setupMouseMove(state) {
  * @param {boolean for if the object is collidable}
  * @purpose Loads an obj file and applies it's material to it
  */
-function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, scale) {
+function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, scale, color) {
 
     var mtlLoader = new THREE.MTLLoader();
     mtlLoader.setPath(basePath);
     var url = mtlURL;
 
     mtlLoader.load(url, function (materials) {
-        console.log(materials);
+        //console.log(materials);
         materials.preload();
 
         var objLoader = new THREE.OBJLoader();
@@ -285,6 +299,14 @@ function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, s
                 child.receiveShadow = true;
             });
 
+            if (materials.materials.None != null && color) {
+                //console.log(materials.materials.None.color);
+                materials.materials.None.color.r = color[0];
+                materials.materials.None.color.g = color[1];
+                materials.materials.None.color.b = color[2];
+            }
+
+
             if (isPlayer) {
                 object.scale.set(scale[0], scale[1], scale[2]);
                 state.ship = object;
@@ -294,6 +316,7 @@ function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, s
             }
             else {
                 object.scale.set(scale[0], scale[1], scale[2]);
+                state.models.push(object);
                 state.scene.add(object);
             }
 
@@ -471,10 +494,60 @@ function setupPlane(state) {
 
 function checkCollision(state, collision, collisionResults) {
 
+    //console.log(collision);
+
     if (collision.type === "wall") {
         state.moving = false;
         //console.log("hit a wall!")
+        if (state.healthVal > 0) {
+            state.healthVal -= 0.25;
+        }
+
     }
+    else if (collision.type === "powerup" && !state.collisionMade) {
+        state.collisionMade = true;
+        if (collision.effect === "points") {
+            //increment score text
+            //play r2 beep
+            playSound(state, '../sounds/R2D2Beep.mp3', state.audioLoader, 0.25, false, false);
+        }
+        else if (collision.effect === "health") {
+            if (state.healthVal < 100) {
+                if (state.healthVal + 5 > 100) {
+                    state.healthVal = 100;
+                }
+                else {
+                    state.healthVal += 0.5;
+                }
+
+            }
+
+            //add some points too :)
+            //play R2 Health
+            playSound(state, '../sounds/R2D2Health.wav', state.audioLoader, 0.25, false, false);
+        }
+        else if (collision.effect === "invincible") {
+            //play scream lmao
+            //make collider off or something!?!? for like 5 seconds
+            //maybe chang eship opacity bitches
+            playSound(state, '../sounds/R2D2Scream.wav', state.audioLoader, 0.25, false, false);
+        }
+
+
+
+        collision.geometry.dispose();
+        collision.material.dispose();
+        state.scene.remove(collision);
+        state.collisionMade = false;
+
+
+    }
+    else {
+        state.moving = true;
+        
+    }
+
+
 
 }
 
@@ -553,4 +626,81 @@ function checkIfSoundsPlaying(state) {
             state.flySounds.pop();
         }
     }
+}
+
+function rotatePowerUps(state, rotateSpeed) {
+    for (let i = 0; i < state.powerUpObjects.length; i++) {
+        state.powerUpObjects[i].rotateY(rotateSpeed);
+        state.powerUpObjects[i].rotateZ(rotateSpeed);
+    }
+}
+
+
+function updateHealth(state) {
+    state.healthText.textContent = state.healthVal;
+}
+
+function checkIfDead(state) {
+    if (state.healthVal <= 0) {
+        state.moving = false;
+        state.tieVideo.style.display = "inline";
+        state.tieVideo.style.width = "100%";
+        state.tieVideo.style.height = "100%";
+        state.tieVideo.style.position = "absolute";
+        //state.tieVideo.muted = false;
+
+        if (!state.videoDonePlaying) {
+            state.tieVideo.play();
+            state.videoDonePlaying = true;
+        }
+
+        //if (state.tieVideo)
+        //console.log(state.tieVideo.currentTime + " vs " + state.tieVideo.duration);
+
+        if (state.tieVideo.currentTime === state.tieVideo.duration) {
+            state.tieVideo.style.display = "none";
+            resetGame(state);
+        }
+    }
+}
+
+function resetGame(state) {
+    //iterate through existing game objects and delete them
+    for (let i = 0; i < state.objects.length; i++) {
+
+        state.objects[i].material.dispose();
+        state.objects[i].geometry.dispose();
+        state.scene.remove(state.objects[i]);
+        //state.objects.pop(state.objects[i]);
+
+
+    }
+    state.objects = [];
+
+    for (let i = 0; i < state.models.length; i++) {
+        state.scene.remove(state.models[i]);
+    }
+    state.camera.position.set(0, 1, -5);
+    state.collisionBox.position.set(0, 0, 10)
+    state.ship.position.set(0, 0, 10);
+
+    initObjects(state);
+
+    for (let i = 0; i < state.lights.length; i++) {
+
+        state.scene.remove(state.lights[i]);
+    }
+
+    createLight(state, state.scene, false, 0, 100, 5);
+    createLight(state, state.scene, true, 0, 50, 5);
+    createLight(state, state.scene, false, 0, 50, 70);
+    createLight(state, state.scene, false, -70, 100, 5);
+    state.videoDonePlaying = false;
+    state.healthVal = 100;
+
+    state.plane.position.x = 0;
+    state.plane.position.y = -5;
+    state.plane.position.z = 0;
+
+    console.log(state.objects);
 }

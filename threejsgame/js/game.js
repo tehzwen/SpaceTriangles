@@ -4,13 +4,15 @@ function main() {
     //state object for holding important values
     var state = {
         objects: [],
+        models: [],
         lights: [],
         ship: null,
         collidableObjects: [],
         selectedIndex: 0,
         camera: null,
         scene: null,
-        flySpeed: 1,
+        flySpeed: 0.5,
+        healthVal: 100,
         mouseX: 0,
         mouseY: 0,
         moving: true,
@@ -29,7 +31,10 @@ function main() {
             'sounds/TIE-Fly4.wav',
             'sounds/TIE-Fly5.wav',
             'sounds/TIE-Fly6.wav',
-            'sounds/TIE-Fly7.wav']
+            'sounds/TIE-Fly7.wav'],
+        powerUpObjects: [],
+        videoDonePlaying: false,
+        collisionMade: false
 
     }
 
@@ -42,7 +47,7 @@ function main() {
 
     var sound = new THREE.Audio(state.listener);
     var audioLoader = new THREE.AudioLoader();
-    //playSound(state, 'sounds/starwarsSong.mp3', audioLoader, 0.25, true, false)
+    playSound(state, 'sounds/starwarsSong.mp3', audioLoader, 0.25, true, false)
 
     state.audioLoader = audioLoader;
 
@@ -67,6 +72,20 @@ function main() {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
     document.body.appendChild(renderer.domElement);
 
+    let healthText = document.getElementById("healthVal");
+    let tieVideo = document.getElementById('tieVideo');
+    let scoreText = document.getElementById("scoreVal");
+
+    state.scoreVal = 0;
+    scoreText.textContent = state.scoreVal;
+    state.scoreText = scoreText;
+    tieVideo.style.display = "none";
+
+    healthText.textContent = state.healthVal;
+
+    state.healthText = healthText;
+    state.tieVideo = tieVideo;
+
     //applying space background to canvas
     //renderer.setClearColor(0xffffff);
     var texture = new THREE.TextureLoader().load("../images/space.jpg");
@@ -78,6 +97,11 @@ function main() {
     setupPlane(state);
     setupKeypresses(state);
     setupMouseMove(state);
+    //load tiefighter model
+    loadModel(state, '../models/tiefighter.obj', '../models/tiefighter.mtl', [0, 0, 10], true, '../models/', [1, 1, 1], null);
+    //create collision box 
+    state.collisionBox = createCube([0, 0, 10], false, false, false, [10, 10, 10], 0x000000);
+    state.scene.add(state.collisionBox);
 
     state.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
@@ -124,10 +148,11 @@ function main() {
                     var ray = new THREE.Raycaster(state.collisionBox.position, directionVector.clone().normalize());
                     var collisionResults = ray.intersectObjects(state.collidableObjects);
                     if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
-
-                        for (let i = 0; i < state.collidableObjects.length; i++) {
-                            checkCollision(state, state.collidableObjects[i], collisionResults);
-                        }
+                        //console.log(collisionResults);
+                        //for (let i = 0; i < state.collidableObjects.length; i++) {
+                        //checkCollision(state, state.collidableObjects[i], collisionResults);
+                        //}
+                        checkCollision(state, collisionResults[0].object);
 
                     }
                     else {
@@ -140,6 +165,9 @@ function main() {
             updateShipPosition(state);
             collidableDistanceCheck(state, 30);
             updateLine(state);
+            rotatePowerUps(state, 0.01);
+            updateHealth(state);
+            checkIfDead(state);
 
         }
 
@@ -168,7 +196,7 @@ function createLight(state, scene, shadow, positionX, positionY, positionZ) {
  * @param {Object from the json file} object 
  * @purpose Takes in an object from the json file and translates the object left and right within the canal
  */
-function movableRock(cube){
+function movableRock(cube) {
     console.log("****************************************");
     console.log(cube.position);
     var clock = new THREE.Clock();
@@ -176,21 +204,21 @@ function movableRock(cube){
     var speed = 2;
     var goingLeft = true;
 
-    function animate(){
+    function animate() {
         //onsole.log("movingggggg");
         delta = clock.getDelta();
 
-        if (cube.position.x < 25.0 && goingLeft === true){
-            cube.translateX(speed*delta);
+        if (cube.position.x < 25.0 && goingLeft === true) {
+            cube.translateX(speed * delta);
 
-            if (cube.position.x === 25.0){
+            if (cube.position.x === 25.0) {
                 goingLeft = false;
             }
         }
-        else if (cube.position.x > -30.0 && goingLeft === false){
-            cube.translateX(-speed*delta);
-            
-            if (cube.position.x === -25.0){
+        else if (cube.position.x > -30.0 && goingLeft === false) {
+            cube.translateX(-speed * delta);
+
+            if (cube.position.x === -25.0) {
                 goingLeft = true;
             }
         }
@@ -208,8 +236,6 @@ function movableRock(cube){
  */
 function initObjects(state) {
 
-    //load tiefighter model
-    loadModel(state, '../models/tiefighter.obj', '../models/tiefighter.mtl', [0, 0, 10], true, '../models/', [1, 1, 1], null);
 
     drawLine(state);
 
@@ -228,9 +254,7 @@ function initObjects(state) {
     state.objects.push(cube);
     state.scene.add(cube);
 
-    //create collision box 
-    state.collisionBox = createCube([0, 0, 10], false, false, false, [10, 10, 10], 0x000000);
-    state.scene.add(state.collisionBox);
+
 
 }
 
@@ -269,7 +293,7 @@ function createObjs(data, state) {
                     state.objects.push(cube);
                 }
 
-                if (data[i].moving === true){
+                if (data[i].moving === true) {
                     movableRock(cube);
                 }
 
@@ -283,36 +307,28 @@ function createObjs(data, state) {
                     state.objects.push(cube);
                 }
 
-                if (data[i].moving === true){
+                if (data[i].moving === true) {
                     movableRock(cube);
                 }
 
                 state.scene.add(cube);
             }
         }
-        else if (data[i].type === "asteroid"){
-            loadModel(state, '../models/RockPackByPava.obj', '../models/RockPackByPava.mtl', data[i].position, false, '../models/', data[i].scale);
-            let cube = createCube(data[i].position, true, true, true, data[i].scale, 0x000000, true, 0);
-            
+        else if (data[i].type === "asteroid") {
+            loadModel(state, '../models/RockPackByPava.obj', '../models/RockPackByPava.mtl', data[i].position, false, '../models/', data[i].scale, [0.37, 0.30, 0.26]);
+            let cube = createCube(data[i].position, true, true, true, data[i].scale, 0x000000, true, 0.0);
+
             // Assign a cube to the model for collision detection
             cube.type = "wall";
 
             state.objects.push(cube);
             state.scene.add(cube);
         }
-        else if (data[i].type === "powerup"){
+        else if (data[i].type === "powerup") {
             let cone = createPyramid(data[i].position, true, true, [data[i].geometry.radius, data[i].geometry.height, data[i].geometry.radialSegments], true, data[i].color, false, 0.5);
-            
-            if (data[i].effect === "health"){
-                
-            }
-            else if (data[i].effect === "invincible"){
-
-            }
-            else{
-                // it is a point earning powerup
-            }
-            
+            cone.effect = data[i].effect;
+            state.objects.push(cone);
+            state.powerUpObjects.push(cone);
             state.scene.add(cone);
         }
     }
