@@ -17,6 +17,8 @@ function main() {
         mouseY: 0,
         moving: true,
         finishedLoad: false,
+        invincible: false,
+        invincibleTime: 0,
         canal: {
             x0: 40,
             x1: -40,
@@ -33,10 +35,19 @@ function main() {
             'sounds/TIE-Fly6.wav',
             'sounds/TIE-Fly7.wav'],
         powerUpObjects: [],
+        movingAsteroids: [],
         videoDonePlaying: false,
-        collisionMade: false
+        collisionMade: false,
+        introDone: false,
+        musicStarted: false,
+        gameStarted: false
+        
 
     }
+
+    let clock = new THREE.Clock();
+    //console.log(clock);
+    state.clock = clock;
 
     //create scene and camera
     var scene = new THREE.Scene();
@@ -47,7 +58,6 @@ function main() {
 
     var sound = new THREE.Audio(state.listener);
     var audioLoader = new THREE.AudioLoader();
-    playSound(state, 'sounds/starwarsSong.mp3', audioLoader, 0.25, true, false)
 
     state.audioLoader = audioLoader;
 
@@ -74,7 +84,37 @@ function main() {
 
     let healthText = document.getElementById("healthVal");
     let tieVideo = document.getElementById('tieVideo');
+    let introVideo = document.getElementById('introVideo');
     let scoreText = document.getElementById("scoreVal");
+    let skipButton = document.getElementById("skipIntroButton");
+    let startButton = document.getElementById("startButton");
+
+    state.startButton = startButton;
+
+    startButton.style.display = "none";
+
+    skipButton.onclick = function () {
+        introVideo.currentTime = introVideo.duration;
+        skipButton.style.display = "none";
+        startButton.style.display = "inline";
+    };
+
+    startButton.onclick = function () {
+        state.gameStarted = true;
+        startButton.style.display = "none";
+
+    };
+
+
+    introVideo.style.display = "inline";
+    introVideo.style.width = "100%";
+    introVideo.style.height = "100%";
+    introVideo.style.position = "absolute";
+
+
+    introVideo.play();
+
+    //introVideo.muted = false;
 
     state.scoreVal = 0;
     scoreText.textContent = state.scoreVal;
@@ -108,7 +148,7 @@ function main() {
     function animate() {
 
         //Check if the ship has been loaded or not
-        if (state.ship && state.finishedLoad) {
+        if (state.ship && state.finishedLoad && state.introDone && state.gameStarted) {
 
             //move the ship, plane, camera and light forward 
             if (state.moving) {
@@ -166,8 +206,27 @@ function main() {
             collidableDistanceCheck(state, 30);
             updateLine(state);
             rotatePowerUps(state, 0.01);
-            updateHealth(state);
+            updateTextValues(state);
             checkIfDead(state);
+            moveAsteroids(state);
+            //addMovingModels(state);
+
+            if (state.invincible) {
+                checkInvincibleTimer(state);
+            }
+
+
+        }
+        //check if intro has been played or not
+        if (introVideo.currentTime === introVideo.duration && !state.musicStarted) {
+            introVideo.style.display = "none";
+            skipButton.style.display = "none";
+            state.introDone = true;
+            startButton.style.display = "inline";
+            playSound(state, 'sounds/starwarsSong.mp3', audioLoader, 0.25, true, false)
+            state.musicStarted = true;
+
+
 
         }
 
@@ -235,10 +294,6 @@ function movableRock(cube) {
  * @purpose Creates objects for the game and places them in the scene
  */
 function initObjects(state) {
-
-
-    drawLine(state);
-
     loadJSON('../gameData/level.json',
         function (data) {
             //console.log(data);
@@ -246,16 +301,6 @@ function initObjects(state) {
         },
         function (xhr) { console.error(xhr); }
     );
-
-    //creating simple green box here
-    //let cube = createCube([5, 15, 100], true, true, true, [10, 10, 10], 0x00FF00);
-    let cube = createCubeWithTexture([5, 15, 100], true, true, true, [10, 10, 10], '../images/poggers.png', "repeat", "repeat", (4, 4));
-    cube.type = "wall"
-    state.objects.push(cube);
-    state.scene.add(cube);
-
-
-
 }
 
 function createObjs(data, state) {
@@ -283,6 +328,12 @@ function createObjs(data, state) {
 
                     pastPosition = currentPosition;
                 }
+            }
+            else if (data[i].ID === "finish") {
+                let cube = createCube(data[i].position, true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.diffuse, data[i].material.transparent, data[i].material.opacity);
+                cube.type = data[i].ID;
+                state.objects.push(cube);
+                state.scene.add(cube);
             }
 
             // If the cube has a diffuse and no texture
@@ -315,14 +366,23 @@ function createObjs(data, state) {
             }
         }
         else if (data[i].type === "asteroid") {
-            loadModel(state, '../models/RockPackByPava.obj', '../models/RockPackByPava.mtl', data[i].position, false, '../models/', data[i].scale, [0.37, 0.30, 0.26]);
             let cube = createCube(data[i].position, true, true, true, data[i].scale, 0x000000, true, 0.0);
-
-            // Assign a cube to the model for collision detection
             cube.type = "wall";
 
             state.objects.push(cube);
             state.scene.add(cube);
+
+            if (data[i].moving) {
+                state.movingAsteroids.push(cube);
+                //console.log(data[i]);
+                loadModel(state, '../models/RockPackByPava.obj', '../models/RockPackByPava.mtl', data[i].position, false, '../models/', data[i].scale, [0.37, 0.30, 0.26], true);
+            }
+            else {
+                loadModel(state, '../models/RockPackByPava.obj', '../models/RockPackByPava.mtl', data[i].position, false, '../models/', data[i].scale, [0.37, 0.30, 0.26]);
+            }
+            // Assign a cube to the model for collision detection
+
+
         }
         else if (data[i].type === "powerup") {
             let cone = createPyramid(data[i].position, true, true, [data[i].geometry.radius, data[i].geometry.height, data[i].geometry.radialSegments], true, data[i].color, false, 0.5);

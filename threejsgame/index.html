@@ -6,9 +6,29 @@
 	<title>Space Triangles</title>
 
 	<video id="tieVideo" width="1200" height="1000">
-		<source src="./videos/TieFighterCrash.mp4" type="video/mp4">
+		<source src="./videos/TieFighterCrash.mp4" type="video/mp4" muted>
 		Your browser does not support the video tag.
 	</video>
+
+	<video id="introVideo" width="1200" height="1000">
+		<source src="./videos/crawl.mp4" type="video/mp4" muted>
+		Your browser does not support the video tag.
+	</video>
+	<div>
+		<button id="startButton" style="margin-right: 50vw;
+		 margin-left: 47.5vw;
+		 margin-top: 25vw;
+		 margin-bottom: 25vw; 
+		 position: absolute;
+		 font-family: Arial, Helvetica, sans-serif;
+		 font-size: 36px;
+		 ">Start</button>
+
+		<button id="skipIntroButton" style="position: absolute;
+		 margin-left: 95vw; 
+		 margin-top: 5vw">X</button>
+	</div>
+
 
 	<div style="display: flex; flex-direction: row; position:absolute; margin-left: 50px">
 		<h3 style="font-family: Arial, Helvetica, sans-serif;
@@ -19,7 +39,7 @@
 		color: white;"></h3>
 
 		<div style="display: flex; flex-direction: row; position:absolute; margin-left:12vw"" >
-			<h3 style="color: white; font-family: Arial, Helvetica, sans-serif;">SCORE:</h3>
+			<h3 style=" color: white; font-family: Arial, Helvetica, sans-serif;">SCORE:</h3>
 			<h3 id="scoreVal" style="font-family: Arial, Helvetica, sans-serif;
 			color: white;"></h3>
 		</div>

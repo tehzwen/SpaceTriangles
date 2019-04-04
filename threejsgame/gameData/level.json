@@ -55,7 +55,7 @@
         "collidable": true,
         "position": [0, 10, 260],
         "geometry": {"width": 30,"height": 40, "depth": 15},
-        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
+        "material": {"diffuse": null, "texture": "../images/swblock.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "asteroid",
@@ -283,9 +283,12 @@
         "position": [-30, 22, 1460],
         "scale": [20, 50, 20]
     },
+
+
     {
         "type": "asteroid",
         "moving": true,
+        "ID":"moving1",
         "collidable": true,
         "position": [-25, 22, 1600],
         "scale": [20, 40, 20]
@@ -293,10 +296,13 @@
     {
         "type": "asteroid",
         "moving": true,
+        "ID":"moving2",
         "collidable": true,
         "position": [25, 22, 1800],
         "scale": [20, 40, 20]
     },
+
+
     {
         "type": "asteroid",
         "moving": false,
@@ -453,7 +459,7 @@
         "collidable": true,
         "position": [30, 20, 2800],
         "geometry": {"width": 30,"height": 30, "depth": 15},
-        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
+        "material": {"diffuse": null, "texture": "../images/swblock.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "powerup",
@@ -468,7 +474,7 @@
         "collidable": true,
         "position": [-30, 20, 2800],
         "geometry": {"width": 30,"height": 30, "depth": 15},
-        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
+        "material": {"diffuse": null, "texture": "../images/swblock.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "cube",
@@ -476,7 +482,7 @@
         "collidable": true,
         "position": [30, 20, 3000],
         "geometry": {"width": 30,"height": 30, "depth": 15},
-        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
+        "material": {"diffuse": null, "texture": "../images/swblock.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "powerup",
@@ -491,7 +497,7 @@
         "collidable": true,
         "position": [-30, 20, 3000],
         "geometry": {"width": 30,"height": 30, "depth": 15},
-        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
+        "material": {"diffuse": null, "texture": "../images/swblock.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "cube",
@@ -499,7 +505,7 @@
         "collidable": true,
         "position": [30, 20, 3200],
         "geometry": {"width": 30,"height": 30, "depth": 15},
-        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
+        "material": {"diffuse": null, "texture": "../images/swblock.jpg", "transparent": false, "opacity": 1}
     },
     {
         "type": "powerup",
@@ -514,7 +520,16 @@
         "collidable": true,
         "position": [-30, 20, 3200],
         "geometry": {"width": 30,"height": 30, "depth": 15},
-        "material": {"diffuse": null, "texture": "../images/Lipton.jpg", "transparent": false, "opacity": 1}
+        "material": {"diffuse": null, "texture": "../images/swblock.jpg", "transparent": false, "opacity": 1}
+    },
+    {
+        "type": "cube",
+        "moving": false,
+        "collidable": false,
+        "ID": "finish",
+        "position": [0, 20, 3350],
+        "geometry": {"width": 200,"height": 100, "depth": 15},
+        "material": {"diffuse": "0xFFFFFF", "texture": null, "transparent": true, "opacity": 0.5}
     }
     
 ]

@@ -278,7 +278,7 @@ function setupMouseMove(state) {
  * @param {boolean for if the object is collidable}
  * @purpose Loads an obj file and applies it's material to it
  */
-function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, scale, color) {
+function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, scale, color, moving) {
 
     var mtlLoader = new THREE.MTLLoader();
     mtlLoader.setPath(basePath);
@@ -318,6 +318,10 @@ function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, s
                 object.scale.set(scale[0], scale[1], scale[2]);
                 state.models.push(object);
                 state.scene.add(object);
+            }
+
+            if (moving){
+                state.movingAsteroids.push(object);
             }
 
         });
@@ -496,7 +500,7 @@ function checkCollision(state, collision, collisionResults) {
 
     //console.log(collision);
 
-    if (collision.type === "wall") {
+    if (collision.type === "wall" && !state.invincible) {
         state.moving = false;
         //console.log("hit a wall!")
         if (state.healthVal > 0) {
@@ -509,15 +513,18 @@ function checkCollision(state, collision, collisionResults) {
         if (collision.effect === "points") {
             //increment score text
             //play r2 beep
+            state.scoreVal += 0.5;
             playSound(state, '../sounds/R2D2Beep.mp3', state.audioLoader, 0.25, false, false);
         }
         else if (collision.effect === "health") {
+            state.scoreVal += 0.8;
             if (state.healthVal < 100) {
                 if (state.healthVal + 5 > 100) {
                     state.healthVal = 100;
                 }
                 else {
                     state.healthVal += 0.5;
+
                 }
 
             }
@@ -531,6 +538,10 @@ function checkCollision(state, collision, collisionResults) {
             //make collider off or something!?!? for like 5 seconds
             //maybe chang eship opacity bitches
             playSound(state, '../sounds/R2D2Scream.wav', state.audioLoader, 0.25, false, false);
+            state.invincible = true;
+            state.invincibleTime = Date.now();
+            changeShipOpacity(state, 0.5);
+            //console.log(Date.now());
         }
 
 
@@ -542,9 +553,14 @@ function checkCollision(state, collision, collisionResults) {
 
 
     }
+
+    else if (collision.type === "finish"){
+        resetGame(state);
+    }
+
     else {
         state.moving = true;
-        
+
     }
 
 
@@ -636,8 +652,9 @@ function rotatePowerUps(state, rotateSpeed) {
 }
 
 
-function updateHealth(state) {
-    state.healthText.textContent = state.healthVal;
+function updateTextValues(state) {
+    state.healthText.textContent = float2int(state.healthVal);
+    state.scoreText.textContent = float2int(state.scoreVal);
 }
 
 function checkIfDead(state) {
@@ -697,10 +714,75 @@ function resetGame(state) {
     createLight(state, state.scene, false, -70, 100, 5);
     state.videoDonePlaying = false;
     state.healthVal = 100;
-
+    state.scoreVal = 0;
     state.plane.position.x = 0;
     state.plane.position.y = -5;
     state.plane.position.z = 0;
 
-    console.log(state.objects);
+    state.startButton.style.display = "inline";
+    state.gameStarted = false;
+
+}
+
+function float2int(value) {
+    return value | 0;
+}
+
+function checkInvincibleTimer(state){
+    let time = Date.now();
+
+    if (time - state.invincibleTime >= 4000){
+        
+        state.invincible = false;
+        changeShipOpacity(state, 1.0);
+    }
+}
+
+function changeShipOpacity(state, value){
+    let material = state.ship.children[0].material;
+
+    for (let x = 0; x < material.length; x++){
+        material[x].transparent = true;
+        material[x].opacity = value;
+    }
+}
+/**
+ * 
+ * @param {*} state 
+ */
+function moveAsteroids(state){
+
+    let speed = 10;
+
+    let delta = state.clock.getDelta();
+
+    for (let i = 0; i < state.movingAsteroids.length; i++){
+
+        if (state.movingAsteroids[i].position.x === -25){
+
+            //send left (positive)
+            state.movingAsteroids[i].direction = "left";
+        }
+        else if (state.movingAsteroids[i].position.x === 25){
+            //send right (negative)
+            state.movingAsteroids[i].direction = "right";
+        }
+
+        if (state.movingAsteroids[i].direction === "left" && state.movingAsteroids[i].position.x < 25){
+            state.movingAsteroids[i].position.x += speed*delta;
+        }
+        else if (state.movingAsteroids[i].direction === "right"  && state.movingAsteroids[i].position.x > -25){
+            state.movingAsteroids[i].position.x -= speed*delta;
+        }
+
+        else{
+            if (state.movingAsteroids[i].direction === "left"){
+                state.movingAsteroids[i].direction = "right";
+            }
+            else{
+                state.movingAsteroids[i].direction = "left";
+            }
+        }
+
+    }
 }
