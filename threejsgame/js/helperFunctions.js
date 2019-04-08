@@ -60,10 +60,19 @@ function createCube(position, castShadow, receiveShadow, visible, geometryVals, 
     return cube;
 }
 
-function createCubeWithTexture(position, castShadow, receiveShadow, visible, geometryVals, textureURL, wrapS, wrapT, repeatTuple) {
+/**
+ * 
+ * @param {Array[x,y,z] of position of cube} position 
+ * @param {Boolean whether cube will cast a shadow or not} castShadow 
+ * @param {Boolean whether cube will receive a shadow or not} receiveShadow 
+ * @param {Boolean whether cube is visible or not} visible 
+ * @param {Array[l,w,d] of geometry values for cube} geometryVals 
+ * @param {Path for texture to be loaded} textureURL 
+ * @purpose Creates cubes with textures loaded onto them and adds to scene
+ */
+function createCubeWithTexture(position, castShadow, receiveShadow, visible, geometryVals, textureURL) {
     let texture = new THREE.TextureLoader().load(textureURL);
     let geometry = new THREE.BoxGeometry(geometryVals[0], geometryVals[1], geometryVals[2]);
-    //texture.repeat.set(repeatTuple[0], repeatTuple[1]);
     let material = new THREE.MeshBasicMaterial({
         map: texture
     });
@@ -79,6 +88,17 @@ function createCubeWithTexture(position, castShadow, receiveShadow, visible, geo
     return cube;
 }
 
+/**
+ * 
+ * @param {Array[x,y,z] holding position of pyramid} position 
+ * @param {Boolean for whether object casts a shadow or not} castShadow 
+ * @param {Boolean for whether object receives a shadow or not} receiveShadow 
+ * @param {Array[l,w,d] for creating the geometry of the object} geometryVals 
+ * @param {Boolean for whether the object is visible} visible 
+ * @param {Hex value representing color} color 
+ * @param {Boolean for whether the object is transparent} transparent 
+ * @param {Opacity value for the pyramid} opacity 
+ */
 function createPyramid(position, castShadow, receiveShadow, geometryVals, visible, color, transparent, opacity) {
 
     color = parseInt(color, 16);
@@ -106,7 +126,9 @@ function createPyramid(position, castShadow, receiveShadow, geometryVals, visibl
  * 
  * @param {State variable holding all game info} state 
  * @param {Which direction we intend to move the ship} direction 
- * @purpose ####### WIP ####### rotates the ship
+ * @purpose This was a rotation function planned to be used to rotate 
+ * the ship in the direction being moved toward with the mouse. Was
+ * never actually used in production.
  */
 function rotateShip(state, direction) {
     var ship = state.objects[state.selectedIndex];
@@ -128,7 +150,6 @@ function rotateShip(state, direction) {
     }
 }
 
-
 /**
  * 
  * @param {state variable holding game info} state 
@@ -141,8 +162,6 @@ function updateShipPosition(state) {
     var mouseY = state.mouseY;
     let speed = 0.0009;
 
-    //console.log(state.audioLoader);
-    //console.log(state.audioLoader.isPlaying);
     if (state.healthVal > 0) {
 
         if (state.mouseX > 700 || state.mouseX < -700) {
@@ -150,13 +169,11 @@ function updateShipPosition(state) {
             if (state.flySounds.length <= 0) {
 
                 var rand = state.flySoundsPaths[Math.floor(Math.random() * state.flySoundsPaths.length)];
-
                 let sound = playSound(state, rand, state.audioLoader, 0.15, false)
                 state.flySounds.push(sound);
             }
             else {
                 if (state.flySounds[0].isPlaying) {
-                    console.log("here");
                 }
                 else {
                     state.flySounds.pop();
@@ -200,12 +217,8 @@ function updateShipPosition(state) {
                 state.mouseY -= Math.abs(mouseY) * speed;
                 state.collisionBox.position.y -= Math.abs(mouseY) * speed;
             }
-
         }
     }
-
-
-
 }
 
 
@@ -216,15 +229,13 @@ function updateShipPosition(state) {
  */
 function setupMouseMove(state) {
     document.addEventListener("mousemove", (event) => {
-
-
         if (state.ship) {
             /*Get offset of mouse from screen center */
             let movementX = window.innerWidth / 2 - event.clientX;
             let movementY = window.innerHeight / 2 - event.clientY;
 
             if (event.ctrlKey) {
-                console.log("here");
+
                 if (movementX > 0) {
                     state.camera.rotation.y -= 0.002;
                 }
@@ -243,26 +254,19 @@ function setupMouseMove(state) {
             else {
                 if (movementX > 0) {
                     state.mouseX = movementX;
-                    //rotateShip(state,"Left");
                 }
                 else if (movementX < 0) {
                     state.mouseX = movementX;
-                    //rotateShip(state,"Right");
                 }
 
                 if (movementY > 0) {
                     state.mouseY = movementY;
-                    //console.log(state.mouseY);
-                    //rotateShip(state,"Down");
                 }
 
                 else if (movementY < 0) {
                     state.mouseY = movementY;
-                    //console.log(state.mouseY);
-                    //rotateShip(state,"Up");
                 }
             }
-
         }
 
     });
@@ -274,8 +278,11 @@ function setupMouseMove(state) {
  * @param {string url of the obj file} objURL 
  * @param {string url of the mtl file} mtlURL 
  * @param {array of coordinates for position(x,y,z)} initialPosition 
+ * @param {boolean for if the object is player} isPlayer
+ * @param {basepath variable to show basepath of files} basePath
  * @param {array for scaling of object} scale
- * @param {boolean for if the object is collidable}
+ * @param {color values for loaded model} color
+ * @param {boolean value to add to moving asteroids} moving
  * @purpose Loads an obj file and applies it's material to it
  */
 function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, scale, color, moving) {
@@ -285,7 +292,6 @@ function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, s
     var url = mtlURL;
 
     mtlLoader.load(url, function (materials) {
-        //console.log(materials);
         materials.preload();
 
         var objLoader = new THREE.OBJLoader();
@@ -300,19 +306,15 @@ function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, s
             });
 
             if (materials.materials.None != null && color) {
-                //console.log(materials.materials.None.color);
                 materials.materials.None.color.r = color[0];
                 materials.materials.None.color.g = color[1];
                 materials.materials.None.color.b = color[2];
             }
 
-
             if (isPlayer) {
                 object.scale.set(scale[0], scale[1], scale[2]);
                 state.ship = object;
                 state.scene.add(object);
-
-
             }
             else {
                 object.scale.set(scale[0], scale[1], scale[2]);
@@ -320,7 +322,7 @@ function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, s
                 state.scene.add(object);
             }
 
-            if (moving){
+            if (moving) {
                 state.movingAsteroids.push(object);
             }
 
@@ -329,6 +331,15 @@ function loadModel(state, objURL, mtlURL, initialPosition, isPlayer, basePath, s
     });
 }
 
+/**
+ * 
+ * @param {Game state variables} state 
+ * @param {Path for the obj file} objURL 
+ * @param {Array[x,y,z] of the initial object's position} initialPosition 
+ * @param {Boolean flag to tell if it is the player or not} isPlayer 
+ * @purpose Loads a model without any material and adds to the scene, used for
+ * non player models
+ */
 function loadModelNoMaterial(state, objURL, initialPosition, isPlayer) {
     let material = new THREE.MeshStandardMaterial({
         roughness: 0.8,
@@ -360,73 +371,103 @@ function loadModelNoMaterial(state, objURL, initialPosition, isPlayer) {
 
 /**
  * 
+ * @param {Game State variable} state 
+ * @purpose Function to move camera to the ship and return from
+ */
+function moveCameraToShip(state) {
+
+    if (!state.firstPersonCam) {
+        smoothCameraMovementToZ(state, state.ship.position.z, true);
+    }
+    else {
+        smoothCameraMovementToZ(state, state.ship.position.z - 15);
+    }
+}
+
+/**
+ * 
+ * @param {Game State variable} state 
+ * @param {Z value that we would like to move towards} zVal 
+ * @param {boolean flag for determining if we are moving to the ship or not to adjust y values} returnToShip 
+ * @purpose Smoothly move camera to Z position
+ */
+function smoothCameraMovementToZ(state, zVal, returnToShip) {
+
+    //check if we return to the ship or not
+    if (returnToShip) {
+        //move camera to appropriate y value
+        smoothCameraMovementToY(state, state.ship.position.y);
+
+        //if the z value is less than current camera z
+        if (state.camera.position.z > zVal) {
+            state.camera.position.z -= 0.5;
+        }
+        //if the z value is greater than current camera z
+        else if (state.camera.position.z < zVal) {
+            state.camera.position.z += 0.5;
+        }
+        //we have reached our destination so we set flags to stop camera movement
+        else {
+            state.moveCam = false;
+            state.firstPersonCam = !state.firstPersonCam;
+        }
+
+    }
+
+    //not returning to ship but need to move to z coordinate
+    else {
+        //if the z value is less than current camera z
+        if (state.camera.position.z > zVal) {
+            state.camera.position.z -= 0.5;
+        }
+        //if the z value is greater than current camera z
+        else if (state.camera.position.z < zVal) {
+            state.camera.position.z += 0.5;
+        }
+        //we have reached our destination so we set flags to stop camera movement
+        else {
+            state.moveCam = false;
+            state.firstPersonCam = !state.firstPersonCam;
+        }
+    }
+
+}
+
+/**
+ * 
+ * @param {Game state variable} state 
+ * @param {y value to move towards} yVal 
+ * @purpose Smoothly moves camera to Y position
+ */
+function smoothCameraMovementToY(state, yVal) {
+
+    if (state.camera.position.y > yVal) {
+        state.camera.position.y -= 0.5;
+    }
+    else if (state.camera.position.y < yVal) {
+        state.camera.position.y += 0.5;
+    }
+}
+
+/**
+ * 
  * @param {State variable holding all game info} state
- * @purpose Keyboard controls, not currently being used 
+ * @purpose Keyboard controls for moving camera
  */
 function setupKeypresses(state) {
     document.addEventListener("keydown", (event) => {
 
-
-        if (state.objects[state.selectedIndex]) {
-            var ship = state.ship;
-            var camera = state.camera;
-            var moveVector;
-            var camMoveVector;
-
+        if (state.ship) {
             switch (event.code) {
-                case "KeyA":
-                    console.log("left");
-                    moveVector = new THREE.Vector3(ship.position.x + 0.2, ship.position.y, ship.position.z);
-                    camMoveVector = new THREE.Vector3(camera.position.x + 0.2, camera.position.y, camera.position.z);
-                    ship.position.lerp(moveVector, 1);
-                    camera.position.lerp(camMoveVector, 1);
-                    rotateShip(state, "Left");
-
-                    break;
-                case "KeyD":
-                    moveVector = new THREE.Vector3(ship.position.x - 0.2, ship.position.y, ship.position.z);
-                    camMoveVector = new THREE.Vector3(camera.position.x - 0.2, camera.position.y, camera.position.z);
-                    ship.position.lerp(moveVector, 1);
-                    camera.position.lerp(camMoveVector, 1);
-                    rotateShip(state, "Right");
-
-                    break;
-                case "KeyW":
-                    console.log("down");
-                    break;
-                case "KeyS":
-                    console.log("up");
-                    break;
-
-                case "KeyE":
-                    camera.rotation.y += 0.5;
-                    break;
-
-                case "KeyQ":
-                    camera.rotation.y -= 0.5;
-                    break;
-
-                case "KeyR":
-                    camera.rotation.x -= 0.5;
-                    break;
-
-                case "KeyT":
-                    camera.rotation.x -= 0.5;
-                    break;
-
-                case "Space":
-                    state.plane.rotation.x += 0.2;
+                case "KeyC":
+                    state.moveCam = !state.moveCam;
                     break;
 
                 default:
                     break;
             }
         }
-
-
     });
-
-
 }
 
 /**
@@ -439,14 +480,9 @@ function setupKeypresses(state) {
  * @param {radius for tube} radius 
  * @param {number of segments in radial direction} radialSeg 
  * @param {boolean to determine if tube is closed} closed 
+ * @purpose Was a function we made to create tubes but never implemented fully
  */
 function createTube(state, lengthVal, color, pointsArray, tubularSeg, radius, radialSeg, closed) {
-
-    //example for loop for declaring points along z axis
-    /*
-    for (let i = 0; i < lengthVal; i += 1) {
-        state.tube.tubePoints.push(new THREE.Vector3(0, 15, 2.5 * (i / 4)));
-    }*/
 
     let pathBase = new THREE.CatmullRomCurve3(pointsArray);
     state.tube.curve = pathBase;
@@ -496,26 +532,35 @@ function setupPlane(state) {
     state.scene.add(plane);
 }
 
-function checkCollision(state, collision, collisionResults) {
+/**
+ * 
+ * @param {Game state variable} state 
+ * @param {collision game object} collision 
+ * @purpose Checks collision types and calls functions depending on those types/subtypes
+ */
+function checkCollision(state, collision) {
 
-    //console.log(collision);
-
+    //detect if collision is a wall and remove health if that is the case
     if (collision.type === "wall" && !state.invincible) {
         state.moving = false;
-        //console.log("hit a wall!")
         if (state.healthVal > 0) {
             state.healthVal -= 0.25;
         }
 
     }
+    //detect when the collision is of type powerup and take appropriate action
     else if (collision.type === "powerup" && !state.collisionMade) {
         state.collisionMade = true;
+
+        //if points, play sound, add points
         if (collision.effect === "points") {
-            //increment score text
-            //play r2 beep
+
+            //play r2 beep, increment score text
             state.scoreVal += 0.5;
             playSound(state, '../sounds/R2D2Beep.mp3', state.audioLoader, 0.25, false, false);
         }
+
+        //if health add health up to 100 and add some points
         else if (collision.effect === "health") {
             state.scoreVal += 0.8;
             if (state.healthVal < 100) {
@@ -524,49 +569,46 @@ function checkCollision(state, collision, collisionResults) {
                 }
                 else {
                     state.healthVal += 0.5;
-
                 }
-
             }
-
-            //add some points too :)
             //play R2 Health
             playSound(state, '../sounds/R2D2Health.wav', state.audioLoader, 0.25, false, false);
         }
+
+        //when red powerup we make the ship temporarily able to pass through walls and not take damage for 
         else if (collision.effect === "invincible") {
-            //play scream lmao
-            //make collider off or something!?!? for like 5 seconds
-            //maybe chang eship opacity bitches
+            //play scream sound 
             playSound(state, '../sounds/R2D2Scream.wav', state.audioLoader, 0.25, false, false);
             state.invincible = true;
             state.invincibleTime = Date.now();
             changeShipOpacity(state, 0.5);
-            //console.log(Date.now());
         }
 
-
-
+        //remove the powerup from the scene
         collision.geometry.dispose();
         collision.material.dispose();
         state.scene.remove(collision);
         state.collisionMade = false;
-
-
     }
 
-    else if (collision.type === "finish"){
+    //if we reach the finish line we reset the game
+    else if (collision.type === "finish") {
         resetGame(state);
     }
 
+    //set moving to true if no collisions
     else {
         state.moving = true;
-
     }
-
-
-
 }
 
+/**
+ * 
+ * @param {Game state variable} state 
+ * @purpose This was a function we planned to use for 
+ * shooting lines for the ability to shoot in game but
+ * never fully implemented
+ */
 function drawLine(state) {
 
     var material = new THREE.LineBasicMaterial({
@@ -584,21 +626,12 @@ function drawLine(state) {
     state.scene.add(line);
 }
 
-function updateLine(state) {
-    //console.log(state.line.geometry.vertices);
-    //console.log(state.line.geometry.vertices[0]);
-    //console.log(state.line.geometry.vertices);
-    //state.line.geometry.vertices[0].x += 0.5;
-    //state.line.geometry.verticesNeedUpdate = true;
-
-}
-
-
 /**
  * 
  * @param {path of json file to be loaded} path 
  * @param {call back function upon success} success 
  * @param {call back function upon failure} error 
+ * @purpose Loads json file and calls success callback with results
  */
 function loadJSON(path, success, error) {
     var xhr = new XMLHttpRequest();
@@ -617,6 +650,16 @@ function loadJSON(path, success, error) {
     xhr.send();
 }
 
+/**
+ * 
+ * @param {Game state variable} state 
+ * @param {Path of sound file} path 
+ * @param {Audioloader variable} audioLoader 
+ * @param {Volume level for sound} volume 
+ * @param {Boolean for whether the sound loops} loop 
+ * @param {Boolean if the sound is a flying sound} flySound 
+ * @purpose Function used to play sounds
+ */
 function playSound(state, path, audioLoader, volume, loop, flySound) {
 
     let sound = new THREE.Audio(state.listener);
@@ -631,10 +674,14 @@ function playSound(state, path, audioLoader, volume, loop, flySound) {
     return sound;
 }
 
+/**
+ * 
+ * @param {Game state variable} state 
+ * @purpose Checks if the sound is still playing
+ */
 function checkIfSoundsPlaying(state) {
     for (let i = 0; i < state.flySounds.length; i++) {
 
-        console.log(state.flySounds[0].isPlaying);
         if (state.flySounds[i].isPlaying) {
             state.flySoundPlaying = true;
         }
@@ -644,6 +691,12 @@ function checkIfSoundsPlaying(state) {
     }
 }
 
+/**
+ * 
+ * @param {Game state variable} state 
+ * @param {Variable to show how fast rotate speed} rotateSpeed 
+ * @purpose Function used to rotate powerups in place
+ */
 function rotatePowerUps(state, rotateSpeed) {
     for (let i = 0; i < state.powerUpObjects.length; i++) {
         state.powerUpObjects[i].rotateY(rotateSpeed);
@@ -651,12 +704,21 @@ function rotatePowerUps(state, rotateSpeed) {
     }
 }
 
-
+/**
+ * 
+ * @param {Game state variable} state 
+ * @purpose Updates the text values each frame
+ */
 function updateTextValues(state) {
     state.healthText.textContent = float2int(state.healthVal);
     state.scoreText.textContent = float2int(state.scoreVal);
 }
 
+/**
+ * 
+ * @param {Game state variable} state 
+ * @purpose Checks if the player has died or not and plays death video
+ */
 function checkIfDead(state) {
     if (state.healthVal <= 0) {
         state.moving = false;
@@ -664,16 +726,14 @@ function checkIfDead(state) {
         state.tieVideo.style.width = "100%";
         state.tieVideo.style.height = "100%";
         state.tieVideo.style.position = "absolute";
-        //state.tieVideo.muted = false;
 
+        //checks if the video is not done playing
         if (!state.videoDonePlaying) {
             state.tieVideo.play();
             state.videoDonePlaying = true;
         }
 
-        //if (state.tieVideo)
-        //console.log(state.tieVideo.currentTime + " vs " + state.tieVideo.duration);
-
+        //if the current time is equal to the duration then the video is over
         if (state.tieVideo.currentTime === state.tieVideo.duration) {
             state.tieVideo.style.display = "none";
             resetGame(state);
@@ -681,30 +741,35 @@ function checkIfDead(state) {
     }
 }
 
+/**
+ * 
+ * @param {Game state variable} state
+ * @purpose Resets the game upon completion of the game 
+ */
 function resetGame(state) {
+
     //iterate through existing game objects and delete them
     for (let i = 0; i < state.objects.length; i++) {
-
         state.objects[i].material.dispose();
         state.objects[i].geometry.dispose();
         state.scene.remove(state.objects[i]);
-        //state.objects.pop(state.objects[i]);
-
-
     }
+
     state.objects = [];
 
+    //iterates through the models in the game and deletes them
     for (let i = 0; i < state.models.length; i++) {
         state.scene.remove(state.models[i]);
     }
+
+    //resets the camera and ship positions and recreates the levels
     state.camera.position.set(0, 1, -5);
     state.collisionBox.position.set(0, 0, 10)
     state.ship.position.set(0, 0, 10);
-
     initObjects(state);
 
+    //iterate through the lights and destroy them then recreate them
     for (let i = 0; i < state.lights.length; i++) {
-
         state.scene.remove(state.lights[i]);
     }
 
@@ -712,74 +777,91 @@ function resetGame(state) {
     createLight(state, state.scene, true, 0, 50, 5);
     createLight(state, state.scene, false, 0, 50, 70);
     createLight(state, state.scene, false, -70, 100, 5);
+
+    //reset values for plane, health, score and start buttons
     state.videoDonePlaying = false;
     state.healthVal = 100;
     state.scoreVal = 0;
     state.plane.position.x = 0;
     state.plane.position.y = -5;
     state.plane.position.z = 0;
-
     state.startButton.style.display = "inline";
     state.gameStarted = false;
-
 }
 
+/**
+ * 
+ * @param {float value to be converted} value
+ * @purpose Converts float to ints 
+ */
 function float2int(value) {
     return value | 0;
 }
 
-function checkInvincibleTimer(state){
+/**
+ * 
+ * @param {Game state variable} state 
+ * @purpose checks if the invincibility timer has elapsed 4 seconds or not
+ * and sets the values appropriately. Also calls function to make ship 
+ * opacity
+ */
+function checkInvincibleTimer(state) {
     let time = Date.now();
 
-    if (time - state.invincibleTime >= 4000){
-        
+    if (time - state.invincibleTime >= 4000) {
+
         state.invincible = false;
         changeShipOpacity(state, 1.0);
     }
 }
 
-function changeShipOpacity(state, value){
+/**
+ * 
+ * @param {Game state variable} state 
+ * @param {Opacity value to change to} value 
+ * @purpose Change ships opacity to value
+ */
+function changeShipOpacity(state, value) {
     let material = state.ship.children[0].material;
 
-    for (let x = 0; x < material.length; x++){
+    for (let x = 0; x < material.length; x++) {
         material[x].transparent = true;
         material[x].opacity = value;
     }
 }
+
 /**
  * 
  * @param {*} state 
+ * @purpose Move asteroids from side to side
  */
-function moveAsteroids(state){
+function moveAsteroids(state) {
 
     let speed = 10;
-
     let delta = state.clock.getDelta();
 
-    for (let i = 0; i < state.movingAsteroids.length; i++){
+    for (let i = 0; i < state.movingAsteroids.length; i++) {
 
-        if (state.movingAsteroids[i].position.x === -25){
-
+        if (state.movingAsteroids[i].position.x === -25) {
             //send left (positive)
             state.movingAsteroids[i].direction = "left";
         }
-        else if (state.movingAsteroids[i].position.x === 25){
+        else if (state.movingAsteroids[i].position.x === 25) {
             //send right (negative)
             state.movingAsteroids[i].direction = "right";
         }
 
-        if (state.movingAsteroids[i].direction === "left" && state.movingAsteroids[i].position.x < 25){
-            state.movingAsteroids[i].position.x += speed*delta;
+        if (state.movingAsteroids[i].direction === "left" && state.movingAsteroids[i].position.x < 25) {
+            state.movingAsteroids[i].position.x += speed * delta;
         }
-        else if (state.movingAsteroids[i].direction === "right"  && state.movingAsteroids[i].position.x > -25){
-            state.movingAsteroids[i].position.x -= speed*delta;
+        else if (state.movingAsteroids[i].direction === "right" && state.movingAsteroids[i].position.x > -25) {
+            state.movingAsteroids[i].position.x -= speed * delta;
         }
-
-        else{
-            if (state.movingAsteroids[i].direction === "left"){
+        else {
+            if (state.movingAsteroids[i].direction === "left") {
                 state.movingAsteroids[i].direction = "right";
             }
-            else{
+            else {
                 state.movingAsteroids[i].direction = "left";
             }
         }

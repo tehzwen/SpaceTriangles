@@ -40,7 +40,9 @@ function main() {
         collisionMade: false,
         introDone: false,
         musicStarted: false,
-        gameStarted: false
+        gameStarted: false,
+        firstPersonCam: false,
+        moveCam: false
         
 
     }
@@ -149,6 +151,10 @@ function main() {
 
         //Check if the ship has been loaded or not
         if (state.ship && state.finishedLoad && state.introDone && state.gameStarted) {
+
+            if (state.moveCam){
+                moveCameraToShip(state);
+            }
 
             //move the ship, plane, camera and light forward 
             if (state.moving) {
