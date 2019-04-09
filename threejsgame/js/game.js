@@ -47,8 +47,8 @@ function main() {
 
     }
 
+    // Creating a clock for translating the asteroids later
     let clock = new THREE.Clock();
-    //console.log(clock);
     state.clock = clock;
 
     //create scene and camera
@@ -58,17 +58,18 @@ function main() {
     camera.add(listener);
     state.listener = listener;
 
+    // Setting up the sounds
     var sound = new THREE.Audio(state.listener);
     var audioLoader = new THREE.AudioLoader();
-
     state.audioLoader = audioLoader;
 
+    // Setting up the initial camera position and scene into our state
     camera.position.z = -5;
     camera.position.y = 1;
     state.scene = scene;
     state.camera = camera;
 
-    //create white pointlight
+    // Creating the white pointlight that will follow the ship
     createLight(state, scene, false, 0, 100, 5);
     createLight(state, scene, true, 0, 50, 5);
     createLight(state, scene, false, 0, 50, 70);
@@ -77,13 +78,14 @@ function main() {
     var AmbientLight = new THREE.AmbientLight(0x404040); // soft white light
     scene.add(AmbientLight);
 
-    //create renderer
+    // Create renderer
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
     document.body.appendChild(renderer.domElement);
 
+    // Setting up UI elements using the HTML file ID values
     let healthText = document.getElementById("healthVal");
     let tieVideo = document.getElementById('tieVideo');
     let introVideo = document.getElementById('introVideo');
@@ -95,41 +97,39 @@ function main() {
 
     startButton.style.display = "none";
 
+    // If the close button on the top right of the video has been clicked, stop the video and display the start button
     skipButton.onclick = function () {
         introVideo.currentTime = introVideo.duration;
         skipButton.style.display = "none";
         startButton.style.display = "inline";
     };
 
+    // If the start button has been clicked, start the game
     startButton.onclick = function () {
         state.gameStarted = true;
         startButton.style.display = "none";
 
     };
 
-
+    // Setting up the video elements
     introVideo.style.display = "inline";
     introVideo.style.width = "100%";
     introVideo.style.height = "100%";
     introVideo.style.position = "absolute";
-
-
     introVideo.play();
 
-    //introVideo.muted = false;
-
+    // Setting up score and health UI elements
     state.scoreVal = 0;
     scoreText.textContent = state.scoreVal;
     state.scoreText = scoreText;
-    tieVideo.style.display = "none";
+    tieVideo.style.display = "none"; // Tie Fighter explosion video 
 
     healthText.textContent = state.healthVal;
 
     state.healthText = healthText;
     state.tieVideo = tieVideo;
 
-    //applying space background to canvas
-    //renderer.setClearColor(0xffffff);
+    // Applying space background to canvas
     var texture = new THREE.TextureLoader().load("../images/space.jpg");
     scene.background = texture;
 
@@ -139,24 +139,28 @@ function main() {
     setupPlane(state);
     setupKeypresses(state);
     setupMouseMove(state);
-    //load tiefighter model
+
+    // Load tiefighter model (main player)
     loadModel(state, '../models/tiefighter.obj', '../models/tiefighter.mtl', [0, 0, 10], true, '../models/', [1, 1, 1], null);
-    //create collision box 
+
+    // Create collision box for the main player
     state.collisionBox = createCube([0, 0, 10], false, false, false, [10, 10, 10], 0x000000);
     state.scene.add(state.collisionBox);
 
+    // Setting up camera
     state.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
+    // This animate function is the main functionality of the main player. 
     function animate() {
 
-        //Check if the ship has been loaded or not
+        // Check if the ship has been loaded or not
         if (state.ship && state.finishedLoad && state.introDone && state.gameStarted) {
 
             if (state.moveCam){
                 moveCameraToShip(state);
             }
 
-            //move the ship, plane, camera and light forward 
+            // Move the ship, plane, camera and light forward at a constant rate
             if (state.moving) {
                 state.ship.position.z += state.flySpeed;
                 state.camera.position.z += state.flySpeed;
@@ -169,7 +173,7 @@ function main() {
                 state.collisionBox.position.z += state.flySpeed;
             }
 
-            //this logic was being used to bring the ship back to a neutral rotation
+            // This logic was being used to bring the ship back to a neutral rotation
             if (state.ship.rotation.z > 0) {
                 state.ship.rotation.z -= 0.0008;
             }
@@ -184,8 +188,8 @@ function main() {
                 state.ship.rotation.x += 0.0008;
             }
 
+            // Checking the list of collidable objects so that we can check for collision
             if (state.collidableObjects.length > 0) {
-                //console.log("detecting....");
                 for (var vertexIndex = 0; vertexIndex < state.collisionBox.geometry.vertices.length; vertexIndex++) {
                     var localVertex = state.collisionBox.geometry.vertices[vertexIndex].clone();
                     var globalVertex = state.collisionBox.matrix.multiplyVector3(localVertex);
@@ -193,15 +197,13 @@ function main() {
 
                     var ray = new THREE.Raycaster(state.collisionBox.position, directionVector.clone().normalize());
                     var collisionResults = ray.intersectObjects(state.collidableObjects);
-                    if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
-                        //console.log(collisionResults);
-                        //for (let i = 0; i < state.collidableObjects.length; i++) {
-                        //checkCollision(state, state.collidableObjects[i], collisionResults);
-                        //}
-                        checkCollision(state, collisionResults[0].object);
 
+                    // This will check the collision with other objects. If it detects collision, the player will be unable to move
+                    if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
+                        checkCollision(state, collisionResults[0].object);
                     }
                     else {
+                        // Else, the player can move forwards
                         state.moving = true;
                     }
                 }
@@ -210,20 +212,18 @@ function main() {
             //update the ship location
             updateShipPosition(state);
             collidableDistanceCheck(state, 30);
-            updateLine(state);
             rotatePowerUps(state, 0.01);
             updateTextValues(state);
             checkIfDead(state);
             moveAsteroids(state);
-            //addMovingModels(state);
 
+            // This is specifically for the invincibility powerup. If the player has obtained that, it will be immune to taking collision damage
             if (state.invincible) {
                 checkInvincibleTimer(state);
             }
-
-
         }
-        //check if intro has been played or not
+
+        // Check if intro has been played or not
         if (introVideo.currentTime === introVideo.duration && !state.musicStarted) {
             introVideo.style.display = "none";
             skipButton.style.display = "none";
@@ -231,19 +231,23 @@ function main() {
             startButton.style.display = "inline";
             playSound(state, 'sounds/starwarsSong.mp3', audioLoader, 0.25, true, false)
             state.musicStarted = true;
-
-
-
         }
-
-
         requestAnimationFrame(animate);
         renderer.render(scene, camera);
-
     }
     animate();
 }
 
+/**
+ * 
+ * @param {State variable holding game information} state 
+ * @param {The current scene} scene 
+ * @param {Boolean - determines if the light will cast a shadow} shadow 
+ * @param {Float - x position of the light} positionX 
+ * @param {Float - y position of the light} positionY 
+ * @param {Float - z position of the light} positionZ 
+ * @purpose to create a spotlight at the specified location
+ */
 function createLight(state, scene, shadow, positionX, positionY, positionZ) {
     var light = new THREE.PointLight(0xffffff, 1, 100);
     light.shadow.mapSize.width = 512;  // default
@@ -254,44 +258,6 @@ function createLight(state, scene, shadow, positionX, positionY, positionZ) {
     light.position.set(positionX, positionY, positionZ);
     scene.add(light);
     state.lights.push(light);
-}
-
-/**
- * 
- * @param {Object from the json file} object 
- * @purpose Takes in an object from the json file and translates the object left and right within the canal
- */
-function movableRock(cube) {
-    console.log("****************************************");
-    console.log(cube.position);
-    var clock = new THREE.Clock();
-    var delta = 0;
-    var speed = 2;
-    var goingLeft = true;
-
-    function animate() {
-        //onsole.log("movingggggg");
-        delta = clock.getDelta();
-
-        if (cube.position.x < 25.0 && goingLeft === true) {
-            cube.translateX(speed * delta);
-
-            if (cube.position.x === 25.0) {
-                goingLeft = false;
-            }
-        }
-        else if (cube.position.x > -30.0 && goingLeft === false) {
-            cube.translateX(-speed * delta);
-
-            if (cube.position.x === -25.0) {
-                goingLeft = true;
-            }
-        }
-
-        requestAnimationFrame(animate);
-    }
-    requestAnimationFrame(animate);
-    // Moving the object left and right
 }
 
 /**
@@ -309,10 +275,20 @@ function initObjects(state) {
     );
 }
 
+/**
+ * 
+ * @param {Variable holding the game data imported from the json file} data 
+ * @param {State variable holding game information} state 
+ * @purpose To instantiate the objects read in from the json file
+ */
 function createObjs(data, state) {
+    // Iterate through all objects in the json file
     for (let i = 0; i < data.length; i++) {
+
+        // If the data type is a cube...
         if (data[i].type === "cube") {
-            // This will handle the creation of the canal walls to go as long as the level is
+
+            // This will handle the creation of the right canal walls to go as long as the level is
             if (data[i].ID === "rightStraightWall-0") {
 
                 let pastPosition = data[i].position[2];
@@ -324,6 +300,7 @@ function createObjs(data, state) {
                     pastPosition = currentPosition;
                 }
             }
+            // This will handle the creation of the left canal walls to go as long as the level is
             else if (data[i].ID === "leftStraightWall-0") {
 
                 let pastPosition = data[i].position[2];
@@ -335,6 +312,7 @@ function createObjs(data, state) {
                     pastPosition = currentPosition;
                 }
             }
+            // If the object is marked with "finish", it is the end condition box that allows for the completion of the level
             else if (data[i].ID === "finish") {
                 let cube = createCube(data[i].position, true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.diffuse, data[i].material.transparent, data[i].material.opacity);
                 cube.type = data[i].ID;
@@ -342,7 +320,7 @@ function createObjs(data, state) {
                 state.scene.add(cube);
             }
 
-            // If the cube has a diffuse and no texture
+            // If the cube has a diffuse and no texture, create the cubes
             if (data[i].material.diffuse != null) {
                 let cube = createCube(data[i].position, true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.diffuse, data[i].material.transparent, data[i].material.opacity);
                 if (data[i].collidable === true) {
@@ -350,13 +328,10 @@ function createObjs(data, state) {
                     state.objects.push(cube);
                 }
 
-                if (data[i].moving === true) {
-                    movableRock(cube);
-                }
-
                 state.scene.add(cube);
             }
-            // If the cube has a texture and no diffuse
+
+            // If the cube has a texture and no diffuse, create the cubes
             else {
                 let cube = createCubeWithTexture(data[i].position, true, true, true, [data[i].geometry.width, data[i].geometry.height, data[i].geometry.depth], data[i].material.texture);
                 if (data[i].collidable === true) {
@@ -364,33 +339,32 @@ function createObjs(data, state) {
                     state.objects.push(cube);
                 }
 
-                if (data[i].moving === true) {
-                    movableRock(cube);
-                }
-
                 state.scene.add(cube);
             }
         }
+        // If the data type is an asteroid...
         else if (data[i].type === "asteroid") {
+            // Create the collision box for each asteroid
             let cube = createCube(data[i].position, true, true, true, data[i].scale, 0x000000, true, 0.0);
             cube.type = "wall";
 
             state.objects.push(cube);
             state.scene.add(cube);
 
+            // If the asteroid is marked as "moving"
             if (data[i].moving) {
+                // Push it to the moving asteroid list and load the model
                 state.movingAsteroids.push(cube);
-                //console.log(data[i]);
                 loadModel(state, '../models/RockPackByPava.obj', '../models/RockPackByPava.mtl', data[i].position, false, '../models/', data[i].scale, [0.37, 0.30, 0.26], true);
             }
             else {
+                // Else, just load the model and don't worry about it moving
                 loadModel(state, '../models/RockPackByPava.obj', '../models/RockPackByPava.mtl', data[i].position, false, '../models/', data[i].scale, [0.37, 0.30, 0.26]);
             }
-            // Assign a cube to the model for collision detection
-
-
         }
+        // If the data type is a powerup
         else if (data[i].type === "powerup") {
+            // Create the powerup and store the information so that the effects are used properly (e.g. health, points and invincibility)
             let cone = createPyramid(data[i].position, true, true, [data[i].geometry.radius, data[i].geometry.height, data[i].geometry.radialSegments], true, data[i].color, false, 0.5);
             cone.effect = data[i].effect;
             state.objects.push(cone);
